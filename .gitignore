@@ -1,0 +1,16 @@
+# Mac
+.DS_Store
+
+# Eclipse
+.metadata/
+.recommenders/
+.classpath
+.project
+.settings/
+
+# Maven
+log/
+target/
+
+# OSGI
+target-definition/
