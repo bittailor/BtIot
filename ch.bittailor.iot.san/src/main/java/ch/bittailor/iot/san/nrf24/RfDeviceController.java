@@ -6,6 +6,7 @@ import java.util.Map;
 
 public interface RfDeviceController {
 	
+	int payloadCapacity();
 	
 	void configure(Configuration configuration);
 	boolean write(RfPipe iPipe, ByteBuffer iPacket);
@@ -42,4 +43,6 @@ public interface RfDeviceController {
 			public RfAddress mAddress;
 		};		
 	}
+
+	
 }

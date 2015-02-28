@@ -10,14 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RfDeviceImpl implements RfDevice {
-	private static final Logger s_logger = LoggerFactory.getLogger(RfDeviceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RfDeviceImpl.class);
 
-	private final SPIDevice spi;
-
+	private final SPIDevice mSpi;
 	
-
 	public RfDeviceImpl(GPIOPin chipEnable, SPIDevice spi) {
-		this.spi = spi;
+		mSpi = spi;
 		sleep(5);
 	}
 
@@ -323,12 +321,12 @@ public class RfDeviceImpl implements RfDevice {
 	public ByteBuffer readReceivePayload() {	
 		int availableSize = availableReceivePayload();
 		if (0 >= availableSize ||  availableSize > MAX_PAYLOAD_SIZE) {
-			s_logger.warn("invalid availableSize : 0 >= {} > {} => retry read available receive payload",
+			LOGGER.warn("invalid availableSize : 0 >= {} > {} => retry read available receive payload",
 					availableSize, MAX_PAYLOAD_SIZE); 
 			availableSize = availableReceivePayload();
 		}
 		if (0 >= availableSize ||  availableSize > MAX_PAYLOAD_SIZE) {
-			s_logger.error("invalid availableSize : 0 >= {} > {} => flush the RX FIFO!",
+			LOGGER.error("invalid availableSize : 0 >= {} > {} => flush the RX FIFO!",
 					availableSize,
 					MAX_PAYLOAD_SIZE);
 			flushReceiveFifo();
@@ -561,7 +559,7 @@ public class RfDeviceImpl implements RfDevice {
 
 	private int writeAndRead(java.nio.ByteBuffer src, java.nio.ByteBuffer dst) {
 		try {
-			return spi.writeAndRead(src,dst);
+			return mSpi.writeAndRead(src,dst);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -571,7 +569,7 @@ public class RfDeviceImpl implements RfDevice {
 		try {
 			ByteBuffer txBuffer = ByteBuffer.wrap(new byte[]{src});
 			ByteBuffer rxBuffer = ByteBuffer.allocate(1);	
-			spi.writeAndRead(txBuffer,rxBuffer);
+			mSpi.writeAndRead(txBuffer,rxBuffer);
 			return rxBuffer.get(0);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

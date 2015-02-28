@@ -53,6 +53,11 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		chipEnable(false);
 
 	}
+	
+	@Override
+	public int payloadCapacity() {
+		return RfDevice.MAX_PAYLOAD_SIZE;
+	}
 
 	@Override
 	public void configure(Configuration configuration) {
