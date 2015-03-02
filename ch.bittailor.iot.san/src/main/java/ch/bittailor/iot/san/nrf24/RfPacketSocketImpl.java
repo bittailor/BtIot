@@ -39,6 +39,8 @@ public class RfPacketSocketImpl implements RfPacketSocket {
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+		mNetworkSocket.close();
+		mExecutorService.shutdown();
 	}
 	
 	@Override

@@ -1,10 +1,11 @@
 package ch.bittailor.iot.san.nrf24;
 
+import java.io.Closeable;
 import java.nio.ByteBuffer;
 
 import ch.bittailor.iot.san.utils.Utilities;
 
-public interface RfDevice {
+public interface RfDevice extends Closeable {
 	static public final int MAX_PAYLOAD_SIZE = 32;
 	
 	public enum DataRate {

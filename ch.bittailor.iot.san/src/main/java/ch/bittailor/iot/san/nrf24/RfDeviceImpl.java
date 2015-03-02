@@ -3,7 +3,6 @@ package ch.bittailor.iot.san.nrf24;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import jdk.dio.gpio.GPIOPin;
 import jdk.dio.spibus.SPIDevice;
 
 import org.slf4j.Logger;
@@ -14,9 +13,14 @@ public class RfDeviceImpl implements RfDevice {
 
 	private final SPIDevice mSpi;
 	
-	public RfDeviceImpl(GPIOPin chipEnable, SPIDevice spi) {
+	public RfDeviceImpl(SPIDevice spi) {
 		mSpi = spi;
 		sleep(5);
+	}
+	
+	@Override
+	public void close() throws IOException {
+		mSpi.close();
 	}
 
 	@Override

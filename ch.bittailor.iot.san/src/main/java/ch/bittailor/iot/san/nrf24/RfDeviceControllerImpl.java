@@ -25,10 +25,12 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 
 	private final Executor mExecutor;
 	private final RfDevice mDevice;
+	private final GPIOPin mPower;
 	private final GPIOPin mChipEnable;
 	private final GPIOPin mInterruptPin;
 	private final AtomicReference<InterruptState> mInterruptState;
 	private final AtomicReference<CountDownLatch> mWrittenLatch;
+	private final Off mOff; 
 	private final PowerDown mPowerDown; 
 	private final StandbyI mStandbyI; 
 	private final RxMode mRxMode; 
@@ -38,22 +40,33 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	private Configuration mConfiguration;
 	private Listener mListener;
 
-	public RfDeviceControllerImpl(Executor executor, RfDevice device,GPIOPin chipEnable, GPIOPin interruptPin) {
+	
+	public RfDeviceControllerImpl(Executor executor, RfDevice device, GPIOPin power ,GPIOPin chipEnable, GPIOPin interruptPin) {
 		mExecutor = executor;
 		mDevice = device;
+		mPower = power;
 		mChipEnable = chipEnable;
 		mInterruptPin = interruptPin;
 		mInterruptState = new AtomicReference<RfDeviceControllerImpl.InterruptState>(InterruptState.Ignore);
 		mWrittenLatch = new AtomicReference<CountDownLatch>();
+		mOff = new Off();
 		mPowerDown = new PowerDown();
 		mStandbyI = new StandbyI();
 		mRxMode = new RxMode();
 		mTxMode = new TxMode();
-		mCurrentState = mPowerDown;
+		mCurrentState = mOff;
 		chipEnable(false);
-
 	}
 	
+	@Override
+	public void close() throws IOException {
+		mCurrentState.ToOff();
+		mDevice.close();
+		mChipEnable.close();
+		mInterruptPin.close();
+		mPower.close();
+	}
+
 	@Override
 	public int payloadCapacity() {
 		return RfDevice.MAX_PAYLOAD_SIZE;
@@ -253,6 +266,14 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		}
 	}
 	
+	private void power(boolean value) {
+		try {
+			mPower.setValue(value);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	private enum InterruptState {
 		Ignore,
 		Rx,
@@ -263,15 +284,61 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	
 	private interface StateBase {
 		void ApplyTo(StateBase other);
+		void ToOff();
 		void ToPowerDown();
 		void ToStandbyI();
 		void ToRxMode();
 		void ToTxMode();
 	}
 
+	private class Off implements StateBase {
+
+		@Override
+		public void ApplyTo(StateBase other) {
+			other.ToOff();
+		}
+
+		@Override
+		public void ToOff() {
+			// self nothing to do			
+		}
+
+		@Override
+		public void ToPowerDown() {
+			power(true);
+			Utilities.delay(100);
+			mCurrentState = mPowerDown;
+		}
+
+		@Override
+		public void ToStandbyI() {
+			ToPowerDown();
+			mCurrentState.ToStandbyI();
+			
+		}
+
+		@Override
+		public void ToRxMode() {
+			ToPowerDown();
+			mCurrentState.ToRxMode();
+		}
+
+		@Override
+		public void ToTxMode() {
+			ToPowerDown();
+			mCurrentState.ToTxMode();			
+		}
+	
+	}
+	
 	private class PowerDown implements StateBase {
 		public void ApplyTo(StateBase other) {
 			other.ToPowerDown();
+		}
+		
+		public void ToOff() {
+			power(false);
+			mCurrentState = mOff;
 		}
 
 		public void ToPowerDown() {
@@ -312,6 +379,11 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	private class StandbyI implements StateBase {
 		public void ApplyTo(StateBase other) {
 			other.ToStandbyI();
+		}
+		
+		public void ToOff() {
+			ToPowerDown();
+			mCurrentState.ToOff();
 		}
 
 		public void ToPowerDown(){
@@ -378,6 +450,11 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 			other.ToRxMode();
 		}
 		
+		public void ToOff() {
+			ToPowerDown();
+			mCurrentState.ToOff();
+		}
+		
 		public void ToPowerDown(){
 			ToStandbyI();
 			mCurrentState.ToPowerDown();
@@ -415,6 +492,11 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		public void ToPowerDown(){
 			ToStandbyI();
 			mCurrentState.ToPowerDown();
+		}
+		
+		public void ToOff() {
+			ToPowerDown();
+			mCurrentState.ToOff();
 		}
 
 		public void ToStandbyI(){

@@ -1,5 +1,6 @@
 package ch.bittailor.iot.san.nrf24;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.slf4j.Logger;
@@ -22,11 +23,26 @@ public class RfNetworkSocketImpl implements RfNetworkSocket {
 		mAddress = address;
 		mController = controller;
 		mRouting = new RfNetworkRoutingAlgorithm();
+		
+		RfDeviceController.Configuration configuration = new RfDeviceController.Configuration();
+		configuration.mAutoRetransmitDelay = ((mAddress.getId() % 6) * 2) + 5;
+		for(RfPipe pipe : RfPipe.values()) {
+			mRouting.configurePipe(mAddress, pipe, configuration.pipeConfiguration(pipe));
+		}
+		mController.configure(configuration);		
 	}
 	
+	
+	
+	@Override
+	public void close() throws IOException {
+		mController.close();	
+	}
+
+
+
 	@Override
 	public int payloadCapacity() {
-		// TODO Auto-generated method stub
 		return mController.payloadCapacity() - HEADER_SIZE;
 	}
 

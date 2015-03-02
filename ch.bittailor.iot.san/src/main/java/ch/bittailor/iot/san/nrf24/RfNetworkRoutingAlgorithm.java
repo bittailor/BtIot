@@ -1,12 +1,14 @@
 package ch.bittailor.iot.san.nrf24;
 
+import java.nio.ByteBuffer;
+
 public class RfNetworkRoutingAlgorithm {
 	
-	RfPipe calculateRoutingPipe(int self, int destination) {
+	public RfPipe calculateRoutingPipe(int self, int destination) {
 		return calculateRoutingPipe(new RfSocketAddress(self), new RfSocketAddress(destination));
 	}
 	
-	RfPipe calculateRoutingPipe(RfSocketAddress self, RfSocketAddress destination) {
+	public RfPipe calculateRoutingPipe(RfSocketAddress self, RfSocketAddress destination) {
 		if (self.getLevel() >= destination.getLevel()){
 			return RfPipe.PIPE_0;
 		}
@@ -32,4 +34,33 @@ public class RfNetworkRoutingAlgorithm {
 		}
 	}
 
+	public void configurePipe(RfSocketAddress iSelf, RfPipe iPipe, RfDeviceController.Configuration.PipeConfiguration oPipeConfiguration) {
+	   if(isLeafNode(iSelf) && iPipe != RfPipe.PIPE_0) {
+	      oPipeConfiguration.mEnabled = false;
+	      return;
+	   }
+
+	   oPipeConfiguration.mEnabled = true;
+	   oPipeConfiguration.mAddress = calculatePipeAddress(iSelf,iPipe);
+	}
+	
+	private RfAddress calculatePipeAddress(RfSocketAddress iSelf, RfPipe iPipe) {
+	   int byte0 = iSelf.getId();
+	   int child = iSelf.getId() * 5;
+	   switch(iPipe) {
+	      case PIPE_0 : byte0 = iSelf.getId(); break;
+	      case PIPE_1 : byte0 = child + 1; break;
+	      case PIPE_2 : byte0 = child + 2; break;
+	      case PIPE_3 : byte0 = child + 3; break;
+	      case PIPE_4 : byte0 = child + 4; break;
+	      case PIPE_5 : byte0 = child + 5; break;
+	   }
+	   return new RfAddress(ByteBuffer.wrap(new byte[]{(byte)0xC2,(byte)0xC2,(byte)0xC2,(byte)0xC2,(byte)byte0}));
+	}
+	
+	private boolean isLeafNode(RfSocketAddress iSelf) {
+	   return iSelf.getId() > 50;
+	}
+	
+	
 }
