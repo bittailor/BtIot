@@ -27,7 +27,7 @@ public class ByteBufferTest {
 		ByteBuffer buffer = ByteBuffer.allocate(20);
 		buffer.putInt(0x11223344);
 		buffer.flip();
-		assertEquals(Integer.BYTES, buffer.limit());
+		assertEquals(4, buffer.limit());
 	}
 	
 	@Test
@@ -36,7 +36,7 @@ public class ByteBufferTest {
 		buffer.putInt(0x11223344);
 		buffer.flip();
 		byte value = buffer.get();
-		assertEquals(Integer.BYTES-1, buffer.remaining());
+		assertEquals(3, buffer.remaining());
 		assertEquals(0x11, value);
 	}
 	
@@ -46,7 +46,7 @@ public class ByteBufferTest {
 		buffer.putInt(0x11223344);
 		buffer.flip();
 		byte value = buffer.get(0);
-		assertEquals(Integer.BYTES, buffer.remaining());
+		assertEquals(4, buffer.remaining());
 		assertEquals(0x11, value);
 	}
 	
