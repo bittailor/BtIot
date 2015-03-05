@@ -22,6 +22,11 @@
  
  <repositories>
  	<repository>
+      <id>p2-repo-bittailor</id>
+      <url>file:///${project.basedir}/../target-definition/bittailor/repository</url>
+      <layout>p2</layout>
+    </repository>
+ 	<repository>
       <id>p2-repo-common</id>
       <url>file:///${project.basedir}/../target-definition/common/repository</url>
       <layout>p2</layout>
