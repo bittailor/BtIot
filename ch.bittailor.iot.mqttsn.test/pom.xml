@@ -7,7 +7,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>ch.bittailor.iot.san.test</artifactId>
+  <artifactId>ch.bittailor.iot.mqttsn.test</artifactId>
   <packaging>eclipse-plugin</packaging>
 
   <build>

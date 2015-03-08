@@ -12,3 +12,4 @@ Import-Package: jdk.dio;version="1.0.0",
  org.osgi.service.component;version="1.2.0",
  org.slf4j;version="1.6.4"
 Service-Component: OSGI-INF/component.xml
+Export-Package: ch.bittailor.iot.san

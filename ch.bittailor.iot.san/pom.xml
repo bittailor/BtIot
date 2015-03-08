@@ -4,10 +4,12 @@
 	<groupId>ch.bittailor.iot</groupId>
  	<artifactId>ch.bittailor.iot.parent</artifactId>
   	<version>1.0.0-SNAPSHOT</version>
-    <relativePath>../ch.bittailor.iot.parent</relativePath>
+    <relativePath>../pom.xml</relativePath>
   </parent>
+  
   <artifactId>ch.bittailor.iot.san</artifactId>
   <packaging>eclipse-plugin</packaging>
   <dependencies>
   </dependencies>
+  
 </project>

@@ -28,7 +28,7 @@ public class RfSocket implements PacketSocket {
 	}
 	
 	protected void activate(ComponentContext componentContext) {
-		LOG.info("Bundle " + APP_ID + " has started -- bt");
+		LOG.info("Bundle " + APP_ID + " has started");
 		try {
 			mRfPacketSocket = new RfPacketSocketFactoryImpl().create();
 		} catch (Exception e) {
@@ -37,7 +37,7 @@ public class RfSocket implements PacketSocket {
 	}
 
 	protected void deactivate(ComponentContext componentContext) {
-		LOG.info("Bundle " + APP_ID + " has stopped -- bt");
+		LOG.info("Bundle " + APP_ID + " has stopped");
 		try {
 			mRfPacketSocket.close();
 		} catch (IOException e) {
