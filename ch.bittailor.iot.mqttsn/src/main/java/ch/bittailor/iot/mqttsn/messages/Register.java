@@ -16,7 +16,6 @@ public class Register implements Message {
   }
   
   public Register(int topicId, int msgId, String topicName) {
-		super();
 		mTopicId = topicId;
 		mMsgId = msgId;
 		mTopicName = topicName;

@@ -35,4 +35,12 @@ public class Utilities {
 		buffer.putShort ((short)(value & 0xffff));
 	}
 	
+	public static byte[] getBytes (ByteBuffer buffer)
+	{
+		byte[] byteArray = new byte[buffer.remaining()];
+		buffer.get(byteArray);
+		return byteArray;
+	}
+
+	
 }

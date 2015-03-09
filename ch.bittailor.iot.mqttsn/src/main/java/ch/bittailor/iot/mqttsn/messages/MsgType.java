@@ -14,5 +14,17 @@ public enum MsgType {
 	MsgType(int octet) {
 		this.octet = (byte) octet;
 	}
+	
+	public static MsgType parse(byte octet) {
+		for (MsgType msgType : MsgType.values()) {
+			if (msgType.octet == octet) {
+				return msgType;
+			}
+		}
+		throw new IllegalArgumentException(String.format("No MsgType definition for 0x%x",octet));
+	}
+	
+	
+	
 
 }
