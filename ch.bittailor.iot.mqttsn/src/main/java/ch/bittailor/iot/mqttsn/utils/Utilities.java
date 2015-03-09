@@ -7,7 +7,7 @@ public class Utilities {
 	public final static String STRING_ENCODING = "UTF-8";
 	
 	
-	public static String readString(ByteBuffer buffer) {
+	public static String getString(ByteBuffer buffer) {
 		byte[] raw = new byte[buffer.remaining()];
   	buffer.get(raw);
   	try {
@@ -17,12 +17,22 @@ public class Utilities {
 		}
 	}
 	
-	public static void writeString(String string, ByteBuffer buffer) {
+	public static void putString(ByteBuffer buffer, String string) {
 		try {
 			buffer.put(string.getBytes(Utilities.STRING_ENCODING));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static int getUnsignedShort (ByteBuffer buffer)
+	{
+		return (buffer.getShort() & 0xffff);
+	}
+
+	public static void putUnsignedShort (ByteBuffer buffer, int value)
+	{
+		buffer.putShort ((short)(value & 0xffff));
 	}
 	
 }

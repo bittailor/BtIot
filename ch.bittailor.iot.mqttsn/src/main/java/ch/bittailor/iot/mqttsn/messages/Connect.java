@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import ch.bittailor.iot.mqttsn.utils.Utilities;
 
-public class Connect {
+public class Connect implements Message {
   private Flags mFlags;
   private int mDuration;
   private String mClientId;
@@ -12,8 +12,8 @@ public class Connect {
   Connect(ByteBuffer buffer) {
   	mFlags = new Flags(buffer.get());
   	buffer.get(); // ProtocolId
-  	mDuration = buffer.getShort();
-  	mClientId = Utilities.readString(buffer);
+  	mDuration = Utilities.getUnsignedShort(buffer);
+  	mClientId = Utilities.getString(buffer);
   }
   
   Connect(String clientId) {
@@ -24,17 +24,25 @@ public class Connect {
     mClientId = clientId;
  }
   
-  void writeToBuffer(ByteBuffer buffer) {
+  @Override
+	public void writeToBuffer(ByteBuffer buffer) {
   	int length = 6 + mClientId.length();
   	buffer.put((byte)length);
   	buffer.put(MsgType.CONNECT.octet);
   	buffer.put(mFlags.asByte());
   	buffer.put(ProtocolId.PROTOCOL_ID_1_2.octet);
-  	buffer.putShort((short)mDuration);
-  	Utilities.writeString(mClientId, buffer);
+  	Utilities.putUnsignedShort(buffer, mDuration);
+  	Utilities.putString(buffer, mClientId);
   }
   
-  public boolean isWill() {
+  
+  
+  @Override
+	public void accept(MessageVisitor vistor) {
+  	vistor.visit(this);
+	}
+
+	public boolean isWill() {
 		return mFlags.isWill();
 	}
 
