@@ -40,12 +40,40 @@ public class Publish implements Message{
 		vistor.visit(this);
 	}
 
-	public Flags getFlags() {
-		return mFlags;
+
+	public boolean isDup() {
+		return mFlags.isDup();
 	}
 
-	public void setFlags(Flags flags) {
-		mFlags = flags;
+
+	public void setDup(boolean dup) {
+		mFlags.setDup(dup);
+	}
+
+
+	public int getQos() {
+		return mFlags.getQos();
+	}
+
+
+	public void setQos(int qos) {
+		mFlags.setQos(qos);
+	}
+
+	public boolean isRetain() {
+		return mFlags.isRetain();
+	}
+
+	public void setRetain(boolean retain) {
+		mFlags.setRetain(retain);
+	}
+
+	public TopicIdType getTopicIdType() {
+		return mFlags.getTopicIdType();
+	}
+
+	public void setTopicIdType(TopicIdType topicIdType) {
+		mFlags.setTopicIdType(topicIdType);;
 	}
 
 	public int getTopicId() {

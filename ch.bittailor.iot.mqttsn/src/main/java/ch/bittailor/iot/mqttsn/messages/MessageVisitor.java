@@ -6,4 +6,6 @@ public interface MessageVisitor {
 	void visit(Register register);
 	void visit(Regack regack);
 	void visit(Publish publish);
+	void visit(Disconnect disconnect);
+	void visit(Subscribe subscribe);
 }
