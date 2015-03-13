@@ -2,31 +2,30 @@ package ch.bittailor.iot.san.nrf24;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RfPacketSocketImpl implements RfPacketSocket {
-
+	private static final Logger LOG = LoggerFactory.getLogger(RfPacketSocketImpl.class);
+	
 	private final ExecutorService mExecutorService;
 	private final RfNetworkSocket mNetworkSocket;
-	private final BlockingQueue<Item> mReceivedQueue;
+	private final AtomicReference<RfPacketSocket.Listener> mListener;
 	
 	public RfPacketSocketImpl(ExecutorService executorService, RfNetworkSocket networkSocket) {
 		mExecutorService = executorService;
 		mNetworkSocket = networkSocket;
-		mReceivedQueue = new LinkedBlockingQueue<Item>();
+		mListener = new AtomicReference<RfPacketSocket.Listener>(new NullListener());
 		mNetworkSocket.startListening(new RfNetworkSocket.Listener() {
 			@Override
 			public void packetReceived(RfSocketAddress source, ByteBuffer packet) {
-				try {
-					mReceivedQueue.put(new Item(source,packet));
-				} catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
+				mListener.get().received(source, packet);
 			}
 		});
 	}
@@ -34,11 +33,6 @@ public class RfPacketSocketImpl implements RfPacketSocket {
 	@Override
 	public void close() throws IOException {
 		mNetworkSocket.stopListening();
-		try {
-			mReceivedQueue.put(new Item(null,null));
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
 		mNetworkSocket.close();
 		mExecutorService.shutdown();
 	}
@@ -49,7 +43,7 @@ public class RfPacketSocketImpl implements RfPacketSocket {
 	}
 
 	@Override
-	public int send(final ByteBuffer payload, final RfSocketAddress destination) {
+	public int send(final RfSocketAddress destination, final ByteBuffer payload) {
 		int sendSize = Math.min(payload.remaining(), payloadCapacity());	
 		try {
 			Future<Boolean> future = mExecutorService.submit(new Callable<Boolean>() {
@@ -66,7 +60,28 @@ public class RfPacketSocketImpl implements RfPacketSocket {
 			throw new  RuntimeException(e);
 		}
 	}
+	
+	
+	
+	@Override
+	public void setListener(Listener listener) {
+		mListener.set(listener);
+		
+	}
 
+	@Override
+	public void resetListener() {
+		mListener.set(new NullListener());
+	}
+
+	private static class NullListener implements RfPacketSocket.Listener {
+		@Override
+		public void received(RfSocketAddress source, ByteBuffer payload) {
+			LOG.warn("drop packet no listener set");
+		}
+	}
+
+	/*
 	@Override
 	public RfSocketAddress receive(ByteBuffer payload) {
 		try{
@@ -91,6 +106,7 @@ public class RfPacketSocketImpl implements RfPacketSocket {
 			mPacket = packet;		
 		}
 	}
+	*/
 	
 	
 	

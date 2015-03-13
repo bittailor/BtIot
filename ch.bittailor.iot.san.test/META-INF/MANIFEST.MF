@@ -5,7 +5,8 @@ Bundle-SymbolicName: ch.bittailor.iot.san.test;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Fragment-Host: ch.bittailor.iot.san
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.junit;version="4.10.0",
+Import-Package: ch.bittailor.iot.devices.nrf24,
+ org.junit;version="4.10.0",
  org.mockito;version="2.0.5.beta",
  org.mockito.stubbing;version="2.0.5.beta",
  org.mockito.stubbing.answers;version="2.0.5.beta"

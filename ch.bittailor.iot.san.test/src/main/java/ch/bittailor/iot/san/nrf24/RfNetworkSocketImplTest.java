@@ -13,6 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import ch.bittailor.iot.devices.nrf24.RfDeviceController;
+import ch.bittailor.iot.devices.nrf24.RfPipe;
+
 public class RfNetworkSocketImplTest {
 
 	private static final int OWN_ADDRESS = 0;

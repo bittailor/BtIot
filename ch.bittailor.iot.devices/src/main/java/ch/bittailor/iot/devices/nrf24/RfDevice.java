@@ -1,9 +1,11 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.devices.nrf24;
 
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 
-import ch.bittailor.iot.san.utils.Utilities;
+import ch.bittailor.iot.devices.nrf24.RfAddress;
+import ch.bittailor.iot.devices.nrf24.RfPipe;
+import ch.bittailor.iot.devices.utils.Utilities;
 
 public interface RfDevice extends Closeable {
 	static public final int MAX_PAYLOAD_SIZE = 32;

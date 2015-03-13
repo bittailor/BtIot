@@ -1,6 +1,8 @@
 package ch.bittailor.iot.san.nrf24;
 
-import java.nio.ByteBuffer;
+import ch.bittailor.iot.devices.nrf24.RfAddress;
+import ch.bittailor.iot.devices.nrf24.RfDeviceController;
+import ch.bittailor.iot.devices.nrf24.RfPipe;
 
 public class RfNetworkRoutingAlgorithm {
 	
@@ -55,7 +57,7 @@ public class RfNetworkRoutingAlgorithm {
 	      case PIPE_4 : byte0 = child + 4; break;
 	      case PIPE_5 : byte0 = child + 5; break;
 	   }
-	   return new RfAddress(ByteBuffer.wrap(new byte[]{(byte)0xC2,(byte)0xC2,(byte)0xC2,(byte)0xC2,(byte)byte0}));
+	   return new RfAddress(0xC2,0xC2,0xC2,0xC2,byte0);
 	}
 	
 	private boolean isLeafNode(RfSocketAddress iSelf) {

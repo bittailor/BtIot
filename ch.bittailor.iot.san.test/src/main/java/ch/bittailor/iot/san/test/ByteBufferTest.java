@@ -37,6 +37,7 @@ public class ByteBufferTest {
 		buffer.flip();
 		byte value = buffer.get();
 		assertEquals(3, buffer.remaining());
+		assertEquals(4, buffer.limit());
 		assertEquals(0x11, value);
 	}
 	

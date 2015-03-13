@@ -21,11 +21,13 @@ public class MqttSnGateway {
 		LOG.info("Bundle " + APP_ID + " has stopped");
 	}
 	
-	public synchronized void setQuote(RfSocket rfSocket) {
+	public synchronized void setRfSocket(RfSocket rfSocket) {
+		LOG.info("Bundle " + APP_ID + " RfSocket set");
 		mRfSocket = rfSocket;
 	}
 
-	public synchronized void unsetQuote(RfSocket rfSocket) {
+	public synchronized void unsetRfSocket(RfSocket rfSocket) {
+		LOG.info("Bundle " + APP_ID + " RfSocket unset");
 		if (mRfSocket == rfSocket) {
 			mRfSocket = null;
     }

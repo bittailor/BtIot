@@ -1,4 +1,4 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.devices.nrf24;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -14,10 +14,8 @@ import jdk.dio.gpio.PinListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.bittailor.iot.san.nrf24.RfDevice.DataRate;
-import ch.bittailor.iot.san.nrf24.RfDevice.Status;
-import ch.bittailor.iot.san.nrf24.RfDeviceController.Configuration.PipeConfiguration;
-import ch.bittailor.iot.san.utils.Utilities;
+import ch.bittailor.iot.devices.nrf24.RfDeviceController.Configuration.PipeConfiguration;
+import ch.bittailor.iot.devices.utils.Utilities;
 
 public class RfDeviceControllerImpl implements RfDeviceController {
 
@@ -131,7 +129,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 			
 		} 
 		mCurrentState.ToStandbyI();
-		Status status = mDevice.status();
+		RfDevice.Status status = mDevice.status();
 		s_logger.debug("status after IRQ {}", status);
 				
 		if (status.retransmitsExceeded()) {
@@ -177,7 +175,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		mDevice.autoRetransmitDelay(mConfiguration.mAutoRetransmitDelay);
 		mDevice.autoRetransmitCount(0xf);
 		mDevice.channel(mConfiguration.mChannel);
-		mDevice.dataRate(DataRate.DR_2_MBPS);
+		mDevice.dataRate(RfDevice.DataRate.DR_2_MBPS);
 
 		for (RfPipe pipe : RfPipe.values()) {
 			PipeConfiguration pipeConfiguration = mConfiguration.pipeConfiguration(pipe);

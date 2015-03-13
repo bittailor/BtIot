@@ -8,4 +8,5 @@ public interface MessageVisitor {
 	void visit(Publish publish);
 	void visit(Disconnect disconnect);
 	void visit(Subscribe subscribe);
+	void visit(Suback suback);
 }

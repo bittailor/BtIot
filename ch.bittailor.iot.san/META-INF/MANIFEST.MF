@@ -5,11 +5,14 @@ Bundle-SymbolicName: ch.bittailor.iot.san
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: bittailor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: jdk.dio;version="1.0.0",
+Import-Package: ch.bittailor.iot.devices.nrf24,
+ jdk.dio;version="1.0.0",
  jdk.dio.gpio;version="1.0.0",
  jdk.dio.i2cbus;version="1.0.0",
  jdk.dio.spibus;version="1.0.0",
+ org.eclipse.kura.configuration;version="1.0.0",
  org.osgi.service.component;version="1.2.0",
  org.slf4j;version="1.6.4"
 Service-Component: OSGI-INF/component.xml
-Export-Package: ch.bittailor.iot.san
+Export-Package: ch.bittailor.iot.san,
+ ch.bittailor.iot.san.nrf24

@@ -2,7 +2,10 @@ package ch.bittailor.iot.san.nrf24;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
+import ch.bittailor.iot.devices.nrf24.RfDeviceControllerImpl;
+import ch.bittailor.iot.devices.nrf24.RfDeviceImpl;
 import jdk.dio.Device;
 import jdk.dio.DeviceManager;
 import jdk.dio.gpio.GPIOPin;
@@ -21,7 +24,13 @@ public class RfPacketSocketFactoryImpl implements RfPacketSocketFactory {
 			int chipEnablePin = 25;
 			int interruptPin = 24;
 
-			ExecutorService executor = Executors.newSingleThreadExecutor();
+			ExecutorService executor = Executors.newSingleThreadExecutor( new ThreadFactory() {
+				
+				@Override
+				public Thread newThread(Runnable r) {
+					return new Thread(r, "RF socket executor");
+				}
+			});
 			
 			GPIOPin power = DeviceManager.open(powerPin);
 			power.setDirection(GPIOPin.OUTPUT);

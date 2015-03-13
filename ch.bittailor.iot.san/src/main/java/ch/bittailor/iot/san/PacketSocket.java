@@ -5,8 +5,14 @@ import java.nio.ByteBuffer;
 import ch.bittailor.iot.san.nrf24.RfSocketAddress;
 
 public interface PacketSocket {
+
+	int payloadCapacity();
+	int send(RfSocketAddress destination, ByteBuffer payload);
+	void setListener(Listener listener);
+	void resetListener();
 	
-	 int send(ByteBuffer payload, RfSocketAddress destination);
-	 RfSocketAddress receive(ByteBuffer payload);
-	 
+	public static interface Listener {
+		void received(RfSocketAddress source, ByteBuffer payload);
+	}
+
 }

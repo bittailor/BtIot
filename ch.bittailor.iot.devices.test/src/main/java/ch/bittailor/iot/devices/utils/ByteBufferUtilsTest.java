@@ -1,10 +1,12 @@
-package ch.bittailor.iot.san.utils;
+package ch.bittailor.iot.devices.utils;
 
 import static org.junit.Assert.*;
 
 import java.nio.ByteBuffer;
 
 import org.junit.Test;
+
+import ch.bittailor.iot.devices.utils.Utilities;
 
 public class ByteBufferUtilsTest {
 

@@ -1,4 +1,4 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.devices.nrf24;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -7,6 +7,9 @@ import jdk.dio.spibus.SPIDevice;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ch.bittailor.iot.devices.nrf24.RfAddress;
+import ch.bittailor.iot.devices.nrf24.RfPipe;
 
 public class RfDeviceImpl implements RfDevice {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RfDeviceImpl.class);

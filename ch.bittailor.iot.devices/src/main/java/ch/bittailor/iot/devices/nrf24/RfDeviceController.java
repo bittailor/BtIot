@@ -1,4 +1,4 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.devices.nrf24;
 
 import java.io.Closeable;
 import java.nio.ByteBuffer;
@@ -21,7 +21,7 @@ public interface RfDeviceController extends Closeable {
 	
 	public static class Configuration {
 		public int mAutoRetransmitDelay =  0x15;
-		public int mChannel = 0x10;
+		public int mChannel = 50;
 		private final Map<RfPipe,PipeConfiguration> mPipeConfigurations;
 		
 		public Configuration() {
@@ -31,11 +31,11 @@ public interface RfDeviceController extends Closeable {
 			}
 		}
 
-		int autoRetransmitDelay() {
+		public int autoRetransmitDelay() {
 			return mAutoRetransmitDelay;
 		}
 
-		PipeConfiguration pipeConfiguration(RfPipe pipe) {
+		public PipeConfiguration pipeConfiguration(RfPipe pipe) {
 			return mPipeConfigurations.get(pipe);
 		}
 
