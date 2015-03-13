@@ -4,7 +4,6 @@ require 'net/ssh/telnet'
 
 Hostname = "pione.local"
 Username = "pi"
-Password = ENV["pi_pwd"]
 UploadFolder = "/home/pi/upload"
 
 task :generate do
