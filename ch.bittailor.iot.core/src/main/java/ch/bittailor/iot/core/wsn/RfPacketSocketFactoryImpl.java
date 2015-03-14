@@ -1,4 +1,4 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.core.wsn;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

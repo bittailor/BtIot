@@ -1,4 +1,4 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.core.wsn;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import ch.bittailor.iot.core.devices.nrf24.RfDeviceController;
 import ch.bittailor.iot.core.devices.nrf24.RfDeviceImpl;
 import ch.bittailor.iot.core.devices.nrf24.RfPipe;
-import ch.bittailor.iot.san.utils.Utilities;
+import ch.bittailor.iot.core.utils.Utilities;
 
 public class RfNetworkSocketImpl implements RfNetworkSocket {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RfDeviceImpl.class);
@@ -22,7 +22,7 @@ public class RfNetworkSocketImpl implements RfNetworkSocket {
 	private int mIdCounter;
 	private Listener mListener;
 	
-	RfNetworkSocketImpl(RfSocketAddress address, RfDeviceController controller) {
+	public RfNetworkSocketImpl(RfSocketAddress address, RfDeviceController controller) {
 		mAddress = address;
 		mController = controller;
 		mRouting = new RfNetworkRoutingAlgorithm();

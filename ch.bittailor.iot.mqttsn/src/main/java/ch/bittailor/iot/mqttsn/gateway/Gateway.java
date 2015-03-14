@@ -9,11 +9,11 @@ import java.util.concurrent.ExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.bittailor.iot.core.wsn.RfSocketAddress;
 import ch.bittailor.iot.mqttsn.messages.Message;
 import ch.bittailor.iot.mqttsn.messages.MessageFactory;
 import ch.bittailor.iot.mqttsn.messages.MessageFactoryException;
 import ch.bittailor.iot.san.PacketSocket;
-import ch.bittailor.iot.san.nrf24.RfSocketAddress;
 
 public class Gateway implements Closeable {
 	private static final Logger LOG = LoggerFactory.getLogger(Gateway.class);

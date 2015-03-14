@@ -1,4 +1,4 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.core.wsn;
 
 import ch.bittailor.iot.core.devices.nrf24.RfAddress;
 import ch.bittailor.iot.core.devices.nrf24.RfDeviceController;

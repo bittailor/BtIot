@@ -1,10 +1,11 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.core.wsn;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import ch.bittailor.iot.core.devices.nrf24.RfPipe;
+import ch.bittailor.iot.core.wsn.RfNetworkRoutingAlgorithm;
 
 public class RfNetworkRoutingAlgorithmTest {
 

@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.bittailor.iot.core.wsn.RfSocketAddress;
 import ch.bittailor.iot.mqttsn.messages.Connack;
 import ch.bittailor.iot.mqttsn.messages.Connect;
 import ch.bittailor.iot.mqttsn.messages.Disconnect;
@@ -16,7 +17,6 @@ import ch.bittailor.iot.mqttsn.messages.Regack;
 import ch.bittailor.iot.mqttsn.messages.Register;
 import ch.bittailor.iot.mqttsn.messages.Suback;
 import ch.bittailor.iot.mqttsn.messages.Subscribe;
-import ch.bittailor.iot.san.nrf24.RfSocketAddress;
 
 public class GatewayConnectionImpl implements GatewayConnection, MessageVisitor {
 	private static final Logger LOG = LoggerFactory.getLogger(GatewayConnectionImpl.class);

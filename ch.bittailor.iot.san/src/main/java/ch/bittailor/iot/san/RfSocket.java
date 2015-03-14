@@ -10,9 +10,9 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.bittailor.iot.san.nrf24.RfPacketSocket;
-import ch.bittailor.iot.san.nrf24.RfPacketSocketFactoryImpl;
-import ch.bittailor.iot.san.nrf24.RfSocketAddress;
+import ch.bittailor.iot.core.wsn.RfPacketSocket;
+import ch.bittailor.iot.core.wsn.RfPacketSocketFactoryImpl;
+import ch.bittailor.iot.core.wsn.RfSocketAddress;
 
 public class RfSocket implements PacketSocket, ConfigurableComponent {
 	private static final Logger LOG = LoggerFactory.getLogger(RfSocket.class);

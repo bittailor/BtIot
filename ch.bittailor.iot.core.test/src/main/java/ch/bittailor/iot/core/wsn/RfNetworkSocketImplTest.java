@@ -1,4 +1,4 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.core.wsn;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
@@ -15,6 +15,8 @@ import org.mockito.ArgumentCaptor;
 
 import ch.bittailor.iot.core.devices.nrf24.RfDeviceController;
 import ch.bittailor.iot.core.devices.nrf24.RfPipe;
+import ch.bittailor.iot.core.wsn.RfNetworkSocketImpl;
+import ch.bittailor.iot.core.wsn.RfSocketAddress;
 
 public class RfNetworkSocketImplTest {
 

@@ -3,7 +3,7 @@ package ch.bittailor.iot.mqttsn.gateway;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import ch.bittailor.iot.san.nrf24.RfSocketAddress;
+import ch.bittailor.iot.core.wsn.RfSocketAddress;
 
 public class ConnectionFactoryImpl implements ConnectionFactory {
 

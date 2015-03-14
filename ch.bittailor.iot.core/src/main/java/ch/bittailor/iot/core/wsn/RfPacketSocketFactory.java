@@ -1,4 +1,4 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.core.wsn;
 
 public interface RfPacketSocketFactory {
 	RfPacketSocket create();

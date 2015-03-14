@@ -2,7 +2,7 @@ package ch.bittailor.iot.san;
 
 import java.nio.ByteBuffer;
 
-import ch.bittailor.iot.san.nrf24.RfSocketAddress;
+import ch.bittailor.iot.core.wsn.RfSocketAddress;
 
 public interface PacketSocket {
 

@@ -1,10 +1,10 @@
-package ch.bittailor.iot.san.nrf24;
+package ch.bittailor.iot.core.wsn;
 
 public class RfSocketAddress {
 	private final int mId;
 	private final int mLevel;
 	
-	RfSocketAddress(int id) {
+	public RfSocketAddress(int id) {
 		mId = id;
 		mLevel = calculateLevel(mId);
 	}
