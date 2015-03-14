@@ -39,6 +39,7 @@ task :itest => :deploy do
   failed_tests = 0;
   OsgiConsole.open do |console|
     bundle_ids = []
+    puts "install #{bundles.count} bundles"
     bundles.each do |bundle|
       console.exec("install file:#{UploadFolder}/#{File.basename(bundle)}") do |line|
         # puts line
@@ -48,6 +49,7 @@ task :itest => :deploy do
         end
       end
     end
+    puts "start #{bundles.count} bundles"
     bundle_ids.each do |id|
       console.exec("start #{id}") do |line|
         puts line
@@ -57,6 +59,7 @@ task :itest => :deploy do
         end
       end
     end
+    puts "uninstall #{bundles.count} bundles"
     bundle_ids.reverse.each do |id|
       console.exec("uninstall #{id}") do |line|
         #puts line
@@ -81,8 +84,10 @@ class OsgiConsole
   end
 
   def initialize()
+    puts "login to #{Hostname}"
     @ssh = Net::SSH.start(Hostname, Username)
     @channel = @ssh.open_channel do |channel|
+      puts "open osgi console on #{Hostname}"
       channel.exec("telnet localhost 5002") do |ch, success|
         abort "could not execute command" unless success
         channel.on_data do |ch, data|

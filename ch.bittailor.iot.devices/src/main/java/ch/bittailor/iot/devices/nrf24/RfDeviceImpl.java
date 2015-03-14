@@ -291,11 +291,11 @@ public class RfDeviceImpl implements RfDevice {
 			dataSize = MAX_PAYLOAD_SIZE;
 		}
 
-		ByteBuffer txBuffer = ByteBuffer.allocate(MAX_PAYLOAD_SIZE + 1);
+		byte[] buffer = new byte[dataSize+1];
+		buffer[0] = Commands.CMD_W_TX_PAYLOAD.word;
+		data.get(buffer, 1 ,dataSize);
+		ByteBuffer txBuffer = ByteBuffer.wrap(buffer);
 		ByteBuffer rxBuffer = ByteBuffer.allocate(MAX_PAYLOAD_SIZE + 1);
-		txBuffer.put(Commands.CMD_W_TX_PAYLOAD.word);
-		txBuffer.put(data);
-		txBuffer.flip();
 		writeAndRead(txBuffer, rxBuffer);
 		return dataSize;
 	}

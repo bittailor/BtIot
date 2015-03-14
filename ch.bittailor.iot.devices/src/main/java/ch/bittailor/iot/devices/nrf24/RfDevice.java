@@ -52,10 +52,10 @@ public interface RfDevice extends Closeable {
 		public String toString() {
 			return Utilities.toHexString((byte)mStatus);
 		}
-     };
+	};
 
 	
-    Status status();	
+  Status status();	
 
 	void dynamicPayloadEnabled(RfPipe iPipe, boolean iValue);
 

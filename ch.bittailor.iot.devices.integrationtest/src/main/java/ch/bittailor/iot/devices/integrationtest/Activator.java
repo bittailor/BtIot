@@ -46,6 +46,10 @@ public class Activator implements BundleActivator {
 			@Override
 			public void testFailure(Failure failure) throws Exception {
 				System.out.println("    ! Failure: " + failure.toString());
+				if(failure.getMessage() == null) {
+					System.out.println("  exception :" + failure.getException());
+					System.out.println("  trace     :" + failure.getTrace());		
+				}
 			}
 
 			@Override
