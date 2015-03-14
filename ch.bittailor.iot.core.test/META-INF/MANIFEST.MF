@@ -1,13 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: ch.bittailor.iot.san.test
-Bundle-SymbolicName: ch.bittailor.iot.san.test;singleton:=true
+Bundle-Name: ch.bittailor.iot.devices.test
+Bundle-SymbolicName: ch.bittailor.iot.core.test
 Bundle-Version: 1.0.0.qualifier
-Fragment-Host: ch.bittailor.iot.san
+Fragment-Host: ch.bittailor.iot.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: ch.bittailor.iot.core.devices.nrf24,
- org.junit;version="4.10.0",
+Import-Package: org.junit;version="4.10.0",
  org.mockito;version="2.0.5.beta",
  org.mockito.stubbing;version="2.0.5.beta",
  org.mockito.stubbing.answers;version="2.0.5.beta"
-Bundle-ActivationPolicy: lazy

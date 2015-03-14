@@ -17,8 +17,8 @@ end
 bundles = [
   "target-definition/common/repository/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar",
   "target-definition/common/repository/plugins/org.junit_4.10.0.v4_10_0_v20120426-0900.jar",
-  "ch.bittailor.iot.devices/target/ch.bittailor.iot.devices-1.0.0-SNAPSHOT.jar",
-  "ch.bittailor.iot.devices.integrationtest/target/ch.bittailor.iot.devices.integrationtest-1.0.0-SNAPSHOT.jar"
+  "ch.bittailor.iot.core/target/ch.bittailor.iot.core-1.0.0-SNAPSHOT.jar",
+  "ch.bittailor.iot.core.integrationtest/target/ch.bittailor.iot.core.integrationtest-1.0.0-SNAPSHOT.jar"
 ]
 
 task :build do

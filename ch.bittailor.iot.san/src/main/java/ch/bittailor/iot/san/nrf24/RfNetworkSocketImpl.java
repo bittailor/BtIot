@@ -6,9 +6,9 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.bittailor.iot.devices.nrf24.RfDeviceController;
-import ch.bittailor.iot.devices.nrf24.RfDeviceImpl;
-import ch.bittailor.iot.devices.nrf24.RfPipe;
+import ch.bittailor.iot.core.devices.nrf24.RfDeviceController;
+import ch.bittailor.iot.core.devices.nrf24.RfDeviceImpl;
+import ch.bittailor.iot.core.devices.nrf24.RfPipe;
 import ch.bittailor.iot.san.utils.Utilities;
 
 public class RfNetworkSocketImpl implements RfNetworkSocket {

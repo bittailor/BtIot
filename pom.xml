@@ -10,9 +10,9 @@
   <packaging>pom</packaging>
 
   <modules>
-		<module>ch.bittailor.iot.devices</module>
-		<module>ch.bittailor.iot.devices.test</module>
-		<module>ch.bittailor.iot.devices.integrationtest</module>
+		<module>ch.bittailor.iot.core</module>
+		<module>ch.bittailor.iot.core.test</module>
+		<module>ch.bittailor.iot.core.integrationtest</module>
     <module>ch.bittailor.iot.san</module>
     <module>ch.bittailor.iot.san.test</module>
 		<module>ch.bittailor.iot.mqttsn</module>

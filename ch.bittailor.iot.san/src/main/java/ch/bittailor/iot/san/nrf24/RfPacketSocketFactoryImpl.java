@@ -4,8 +4,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import ch.bittailor.iot.devices.nrf24.RfDeviceControllerImpl;
-import ch.bittailor.iot.devices.nrf24.RfDeviceImpl;
+import ch.bittailor.iot.core.devices.nrf24.RfDeviceControllerImpl;
+import ch.bittailor.iot.core.devices.nrf24.RfDeviceImpl;
 import jdk.dio.Device;
 import jdk.dio.DeviceManager;
 import jdk.dio.gpio.GPIOPin;

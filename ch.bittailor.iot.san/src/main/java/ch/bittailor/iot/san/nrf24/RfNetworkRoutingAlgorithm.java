@@ -1,8 +1,8 @@
 package ch.bittailor.iot.san.nrf24;
 
-import ch.bittailor.iot.devices.nrf24.RfAddress;
-import ch.bittailor.iot.devices.nrf24.RfDeviceController;
-import ch.bittailor.iot.devices.nrf24.RfPipe;
+import ch.bittailor.iot.core.devices.nrf24.RfAddress;
+import ch.bittailor.iot.core.devices.nrf24.RfDeviceController;
+import ch.bittailor.iot.core.devices.nrf24.RfPipe;
 
 public class RfNetworkRoutingAlgorithm {
 	

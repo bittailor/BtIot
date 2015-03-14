@@ -13,8 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import ch.bittailor.iot.devices.nrf24.RfDeviceController;
-import ch.bittailor.iot.devices.nrf24.RfPipe;
+import ch.bittailor.iot.core.devices.nrf24.RfDeviceController;
+import ch.bittailor.iot.core.devices.nrf24.RfPipe;
 
 public class RfNetworkSocketImplTest {
 

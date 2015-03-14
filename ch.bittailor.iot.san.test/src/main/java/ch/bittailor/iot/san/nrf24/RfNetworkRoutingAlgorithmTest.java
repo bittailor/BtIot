@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import ch.bittailor.iot.devices.nrf24.RfPipe;
+import ch.bittailor.iot.core.devices.nrf24.RfPipe;
 
 public class RfNetworkRoutingAlgorithmTest {
 
