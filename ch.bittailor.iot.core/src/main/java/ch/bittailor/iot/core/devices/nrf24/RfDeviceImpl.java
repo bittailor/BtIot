@@ -60,12 +60,12 @@ public class RfDeviceImpl implements RfDevice {
 
 	@Override
 	public TransceiverMode transceiverMode() {
-		return toBoolean(readSubRegister(OneByteRegister.REGISTER_CONFIG,1,0)) ? TransceiverMode.RX_MODE : TransceiverMode.TX_MODE;
+		return (toBoolean(readSubRegister(OneByteRegister.REGISTER_CONFIG, 1, 0))) ? TransceiverMode.RX_MODE : TransceiverMode.TX_MODE;
 	}
 
 	@Override
 	public void transceiverMode(TransceiverMode mode) {
-		writeSubRegister(OneByteRegister.REGISTER_CONFIG,mode == TransceiverMode.RX_MODE?1:0,1,0);
+		writeSubRegister(OneByteRegister.REGISTER_CONFIG, (mode == TransceiverMode.RX_MODE) ? 1 : 0, 1, 0);
 	}
 
 	@Override
@@ -284,7 +284,6 @@ public class RfDeviceImpl implements RfDevice {
 
 	@Override
 	public int writeTransmitPayload(ByteBuffer data) {
-		LOG.debug("write buffer remaining is {}", data.remaining());
 		int dataSize;
 		if (data.remaining() <= MAX_PAYLOAD_SIZE) {
 			dataSize = data.remaining();
@@ -328,7 +327,6 @@ public class RfDeviceImpl implements RfDevice {
 	@Override
 	public ByteBuffer readReceivePayload() {	
 		int availableSize = availableReceivePayload();
-		LOG.debug("readReceivePayload: availableReceivePayload() {}", availableSize);
 		if (0 >= availableSize ||  availableSize > MAX_PAYLOAD_SIZE) {
 			LOG.warn("invalid availableSize : 0 >= {} > {} => retry read available receive payload",
 					availableSize, MAX_PAYLOAD_SIZE); 

@@ -4,7 +4,8 @@ Bundle-Name: MQTT-SN
 Bundle-SymbolicName: ch.bittailor.iot.mqttsn
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: ch.bittailor.iot.core.wsn,
+Import-Package: ch.bittailor.iot.core.mqttsn.gateway,
+ ch.bittailor.iot.core.wsn,
  ch.bittailor.iot.san,
  org.osgi.service.component;version="1.2.0",
  org.slf4j;version="1.6.4"

@@ -233,6 +233,8 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	}
 	
 	private void readReceiveData() {
+		//LOG.debug("receive payload status = {}, isReceiveFifoEmpty = {} ", mDevice.status().toString(), mDevice.isReceiveFifoEmpty());
+		//LOG.debug("   transceiverMode = {}, powerUp = {} ", mDevice.transceiverMode().name(), mDevice.powerUp());
 		while(!mDevice.isReceiveFifoEmpty()) {
 			LOG.debug("receive payload ...");
 			final RfPipe pipe = mDevice.readReceivePipe();

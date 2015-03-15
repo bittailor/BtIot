@@ -27,7 +27,9 @@ public class RfPacketSocketFactoryImpl implements RfPacketSocketFactory {
 				
 				@Override
 				public Thread newThread(Runnable r) {
-					return new Thread(r, "RF socket executor");
+					Thread thread = new Thread(r, "RF socket executor");
+					thread.setPriority(Thread.MAX_PRIORITY);
+					return thread;
 				}
 			});
 			

@@ -6,6 +6,20 @@ Hostname = "pione.local"
 Username = "pi"
 UploadFolder = "/home/pi/upload"
 
+itest_bundles = [
+  "target-definition/common/repository/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar",
+  "target-definition/common/repository/plugins/org.junit_4.10.0.v4_10_0_v20120426-0900.jar",
+  "ch.bittailor.iot.core/target/ch.bittailor.iot.core-1.0.0-SNAPSHOT.jar",
+  "ch.bittailor.iot.core.integrationtest/target/ch.bittailor.iot.core.integrationtest-1.0.0-SNAPSHOT.jar"
+]
+
+app_bundles = [
+  "ch.bittailor.iot.core/target/ch.bittailor.iot.core-1.0.0-SNAPSHOT.jar",
+  "ch.bittailor.iot.san/target/ch.bittailor.iot.san-1.0.0-SNAPSHOT.jar",
+  "ch.bittailor.iot.mqttsn/target/ch.bittailor.iot.mqttsn-1.0.0-SNAPSHOT.jar"
+]
+
+
 task :generate do
   pwd = Dir.pwd
   puts "generate #{pwd}"
@@ -14,33 +28,24 @@ task :generate do
 
 end
 
-bundles = [
-  "target-definition/common/repository/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar",
-  "target-definition/common/repository/plugins/org.junit_4.10.0.v4_10_0_v20120426-0900.jar",
-  "ch.bittailor.iot.core/target/ch.bittailor.iot.core-1.0.0-SNAPSHOT.jar",
-  "ch.bittailor.iot.core.integrationtest/target/ch.bittailor.iot.core.integrationtest-1.0.0-SNAPSHOT.jar"
-]
-
 task :build do
   sh "mvn clean verify"
 end
 
-task :deploy => :build do
-  puts "login to #{Hostname}"
-  Net::SCP.start(Hostname, Username) do |scp|
-    bundles.each do |bundle|
-      puts "upload #{bundle}"
-      scp.upload!(bundle,UploadFolder);
-    end
-  end
+task :itest_deploy => :build do
+  upload(itest_bundles)
 end
 
-task :itest => :deploy do
+task :app_deploy => :build do
+  upload(app_bundles)
+end
+
+task :itest_run => :itest_deploy do
   failed_tests = 0;
   OsgiConsole.open do |console|
     bundle_ids = []
-    puts "install #{bundles.count} bundles"
-    bundles.each do |bundle|
+    puts "install #{itest_bundles.count} itest_bundles"
+    itest_bundles.each do |bundle|
       console.exec("install file:#{UploadFolder}/#{File.basename(bundle)}") do |line|
         # puts line
         m = /Bundle id is (\d+)/.match(line)
@@ -49,7 +54,7 @@ task :itest => :deploy do
         end
       end
     end
-    puts "start #{bundles.count} bundles"
+    puts "start #{itest_bundles.count} itest_bundles"
     bundle_ids.each do |id|
       console.exec("start #{id}") do |line|
         puts line
@@ -59,7 +64,7 @@ task :itest => :deploy do
         end
       end
     end
-    puts "uninstall #{bundles.count} bundles"
+    puts "uninstall #{itest_bundles.count} itest_bundles"
     bundle_ids.reverse.each do |id|
       console.exec("uninstall #{id}") do |line|
         #puts line
@@ -69,8 +74,35 @@ task :itest => :deploy do
   fail "#{failed_tests} tests failed!"   if failed_tests > 0
 end
 
-task :default => :itest
+task :app_run => :app_deploy do
+  OsgiConsole.open do |console|
+    bundle_ids = []
+    puts "install #{app_bundles.count} app_bundles"
+    app_bundles.each do |bundle|
+      console.exec("install file:#{UploadFolder}/#{File.basename(bundle)}") do |line|
+        # puts line
+        m = /Bundle id is (\d+)/.match(line)
+        if m
+          bundle_ids << m[1]
+        end
+      end
+    end
+    puts "bundles #{bundle_ids.join(',')}"
+  end
+end
 
+task :default => :itest_run
+
+
+def upload(bundles)
+  puts "login to #{Hostname}"
+  Net::SCP.start(Hostname, Username) do |scp|
+    bundles.each do |bundle|
+      puts "upload #{bundle}"
+      scp.upload!(bundle,UploadFolder);
+    end
+  end
+end
 
 class OsgiConsole
 
