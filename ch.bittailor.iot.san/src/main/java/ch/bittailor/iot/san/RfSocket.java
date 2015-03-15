@@ -10,6 +10,7 @@ import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.bittailor.iot.core.wsn.PacketSocket;
 import ch.bittailor.iot.core.wsn.RfPacketSocket;
 import ch.bittailor.iot.core.wsn.RfPacketSocketFactoryImpl;
 import ch.bittailor.iot.core.wsn.RfSocketAddress;
@@ -20,8 +21,6 @@ public class RfSocket implements PacketSocket, ConfigurableComponent {
 		
 	private RfPacketSocket mRfPacketSocket;
 
-	
-	
 	@Override
 	public int payloadCapacity() {
 		return mRfPacketSocket.payloadCapacity();

@@ -14,9 +14,7 @@
 		<module>ch.bittailor.iot.core.test</module>
 		<module>ch.bittailor.iot.core.integrationtest</module>
     <module>ch.bittailor.iot.san</module>
-    <module>ch.bittailor.iot.san.test</module>
-		<module>ch.bittailor.iot.mqttsn</module>
-		<module>ch.bittailor.iot.mqttsn.test</module>
+    <module>ch.bittailor.iot.mqttsn</module>
   </modules>
 
   <properties>

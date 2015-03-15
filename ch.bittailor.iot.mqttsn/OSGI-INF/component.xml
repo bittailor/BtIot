@@ -5,5 +5,5 @@
       <provide interface="ch.bittailor.iot.mqttsn.gateway.MqttSnGateway"/>
    </service>
    <property name="service.pid" type="String" value="ch.bittailor.iot.mqttsn.gateway.MqttSnGateway"/>
-   <reference bind="setRfSocket" cardinality="1..1" interface="ch.bittailor.iot.san.PacketSocket" name="PacketSocket" policy="static" unbind="unsetRfSocket"/>
+   <reference bind="setRfSocket" cardinality="1..1" interface="ch.bittailor.iot.core.wsn.PacketSocket" name="PacketSocket" policy="static" unbind="unsetRfSocket"/>
 </scr:component>

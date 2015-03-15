@@ -26,6 +26,23 @@ public class Utilities {
 		}
 	}
 	
+	public static int getUnsignedShort (ByteBuffer buffer)
+	{
+		return (buffer.getShort() & 0xffff);
+	}
+
+	public static void putUnsignedShort (ByteBuffer buffer, int value)
+	{
+		buffer.putShort ((short)(value & 0xffff));
+	}
+	
+	public static byte[] getBytes (ByteBuffer buffer)
+	{
+		byte[] byteArray = new byte[buffer.remaining()];
+		buffer.get(byteArray);
+		return byteArray;
+	}
+	
 	public static void delayInMilliseconds(long milliseconds) {
 		try {
 			TimeUnit.MILLISECONDS.sleep(milliseconds);
