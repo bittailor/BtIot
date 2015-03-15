@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import jdk.dio.gpio.GPIOPin;
+import jdk.dio.gpio.GPIOPinConfig;
 import jdk.dio.gpio.PinEvent;
 import jdk.dio.gpio.PinListener;
 
@@ -19,7 +20,7 @@ import ch.bittailor.iot.core.utils.Utilities;
 
 public class RfDeviceControllerImpl implements RfDeviceController {
 
-	private static final Logger s_logger = LoggerFactory.getLogger(RfDeviceControllerImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RfDeviceControllerImpl.class);
 
 	private final Executor mExecutor;
 	private final RfDevice mDevice;
@@ -45,6 +46,16 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		mPower = power;
 		mChipEnable = chipEnable;
 		mInterruptPin = interruptPin;
+		
+		try {
+			mPower.setDirection(GPIOPin.OUTPUT);
+			mChipEnable.setDirection(GPIOPin.OUTPUT);
+			mInterruptPin.setDirection(GPIOPin.INPUT);
+			mInterruptPin.setTrigger(GPIOPinConfig.TRIGGER_FALLING_EDGE);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
 		mInterruptState = new AtomicReference<RfDeviceControllerImpl.InterruptState>(InterruptState.Ignore);
 		mWrittenLatch = new AtomicReference<CountDownLatch>();
 		mOff = new Off();
@@ -87,9 +98,9 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	private int transmitPacket(RfPipe pipe, ByteBuffer packet) {
 		StateBase originalState = mCurrentState;
 		int sentSize = packet.remaining();
-		s_logger.debug("...send payload of size {} with ", sentSize, Utilities.toHexString(packet));
-		s_logger.debug("transceiverMode {}", mDevice.transceiverMode());
-		s_logger.debug("write current state is {}", mCurrentState.getClass().getName());
+		LOG.debug("...send payload of size {} with ", sentSize, Utilities.toHexString(packet));
+		LOG.debug("transceiverMode {}", mDevice.transceiverMode());
+		LOG.debug("write current state is {}", mCurrentState.getClass().getName());
 
 		mCurrentState.ToStandbyI();
 
@@ -98,18 +109,20 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		mDevice.transmitAddress(transmitPipeAddress);
 		mDevice.receiveAddress(RfPipe.PIPE_0, transmitPipeAddress);
 
+		packet.mark();
 		mDevice.writeTransmitPayload(packet);
 		while(mDevice.isTransmitFifoEmpty()) {
-			s_logger.warn("transmit FIFO empty after sending payload ==> try again ");
+			LOG.warn("transmit FIFO empty after sending payload ==> try again ");
+			packet.reset();
 			mDevice.writeTransmitPayload(packet);
 		}
 
 		if(!interruptPin()) {
-			s_logger.error("IRQ already set before transmit - status {}", mDevice.status());
+			LOG.error("IRQ already set before transmit - status {}", mDevice.status());
 		}
 		CountDownLatch writtenLatch = new CountDownLatch(1);
 		if(mWrittenLatch.getAndSet(writtenLatch) != null) {
-			s_logger.error("old written latch was not null");
+			LOG.error("old written latch was not null");
 		}
 		mCurrentState.ToTxMode();
 		boolean flushTransmitFifo = false;
@@ -119,23 +132,23 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 				mWrittenLatch.set(null);
 				flushTransmitFifo = true;
 				sentSize = 0;
-				s_logger.warn("await for written latch was timed out");
+				LOG.warn("await for written latch was timed out");
 			}
 		} catch (InterruptedException e) {
 			mWrittenLatch.set(null);
 			flushTransmitFifo = true;
 			sentSize = 0;
-			s_logger.error("await for written latch was interrupted",e);
+			LOG.error("await for written latch was interrupted",e);
 			
 		} 
 		mCurrentState.ToStandbyI();
 		RfDevice.Status status = mDevice.status();
-		s_logger.debug("status after IRQ {}", status);
+		LOG.debug("status after IRQ {}", status);
 				
 		if (status.retransmitsExceeded()) {
 			mDevice.clearRetransmitsExceeded();
 			flushTransmitFifo = true;
-			s_logger.warn("transmitPacket: send failed retransmits exceeded!");
+			LOG.warn("transmitPacket: send failed retransmits exceeded!");
 			sentSize = 0;
 		}
 
@@ -144,7 +157,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		}
 		
 		if(!interruptPin()) {
-			s_logger.error("IRQ still set after transmit - status = {} ", status);
+			LOG.error("IRQ still set after transmit - status = {} ", status);
 		}
 
 		if (flushTransmitFifo) {
@@ -169,7 +182,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	
 	private void configureDevice() {
 
-		s_logger.info("Rf24DeviceController::configureDevice - channel is {}", mConfiguration.mChannel);
+		LOG.info("Rf24DeviceController::configureDevice - channel is {}", mConfiguration.mChannel);
 
 		mDevice.dynamicPayloadFeatureEnabled(true);
 		mDevice.autoRetransmitDelay(mConfiguration.mAutoRetransmitDelay);
@@ -179,7 +192,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 
 		for (RfPipe pipe : RfPipe.values()) {
 			PipeConfiguration pipeConfiguration = mConfiguration.pipeConfiguration(pipe);
-			if(pipeConfiguration.mEnabled) {
+			if(pipeConfiguration.mEnabled) {				
 				mDevice.receivePayloadSize(pipe, RfDevice.MAX_PAYLOAD_SIZE);
 				mDevice.receivePipeEnabled(pipe, true);
 				mDevice.dynamicPayloadEnabled(pipe, true);
@@ -192,10 +205,10 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	
 	private void onInterrupt() {
 		InterruptState interruptState =mInterruptState.get();
-		s_logger.debug("onInterrupt - InterruptState = {}", interruptState);
+		LOG.debug("onInterrupt - InterruptState = {}", interruptState);
 		switch (interruptState) {
 			case Ignore: {
-				s_logger.warn("IRQ in InterruptState Ignore");
+				LOG.warn("IRQ in InterruptState Ignore");
 				return;
 			}
 			case Rx:{
@@ -210,7 +223,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 			case Tx:{
 				CountDownLatch writtenLatch = mWrittenLatch.getAndSet(null);
 				if(writtenLatch == null) {
-					s_logger.warn("written latch is null on Tx IRQ");
+					LOG.warn("written latch is null on Tx IRQ");
 					return;
 				}
 				writtenLatch.countDown();
@@ -221,13 +234,13 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	
 	private void readReceiveData() {
 		while(!mDevice.isReceiveFifoEmpty()) {
-			s_logger.debug("receive payload ...");
+			LOG.debug("receive payload ...");
 			final RfPipe pipe = mDevice.readReceivePipe();
 			final ByteBuffer packet = mDevice.readReceivePayload();
 			if(packet.remaining() <= 0) {
-				s_logger.error("invalid read size of {} => drop packet", packet.remaining());
+				LOG.error("invalid read size of {} => drop packet", packet.remaining());
 			} else {
-				s_logger.debug("... payload received of size {} with {}",
+				LOG.debug("... payload received of size {} with {}",
 						packet.remaining(),
 						Utilities.toHexString(packet));
 				mExecutor.execute(new Runnable() {				
@@ -272,6 +285,11 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		}
 	}
 	
+	private void changeState(StateBase newState) {
+		LOG.debug("Change state {} => {}", mCurrentState.toString(), newState.toString());
+		mCurrentState = newState;
+	}
+	
 	private enum InterruptState {
 		Ignore,
 		Rx,
@@ -292,6 +310,11 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	private class Off implements StateBase {
 
 		@Override
+		public String toString() {
+			return "Off";
+		}
+		
+		@Override
 		public void ApplyTo(StateBase other) {
 			other.ToOff();
 		}
@@ -304,8 +327,8 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		@Override
 		public void ToPowerDown() {
 			power(true);
-			Utilities.delay(100);
-			mCurrentState = mPowerDown;
+			Utilities.delayInMilliseconds(100);
+			changeState(mPowerDown);
 		}
 
 		@Override
@@ -326,7 +349,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 			ToPowerDown();
 			mCurrentState.ToTxMode();			
 		}
-	
+
 	}
 	
 	private class PowerDown implements StateBase {
@@ -334,15 +357,23 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 			other.ToPowerDown();
 		}
 		
+		@Override
+		public String toString() {
+			return "PowerDown";
+		}
+		
+		@Override
 		public void ToOff() {
 			power(false);
-			mCurrentState = mOff;
+			changeState(mOff);
 		}
 
+		@Override
 		public void ToPowerDown() {
 			// self nothing to do
 		}
 
+		@Override
 		public void ToStandbyI() {
 			mDevice.flushReceiveFifo();
 			mDevice.flushTransmitFifo();
@@ -358,15 +389,17 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 				throw new RuntimeException(e);
 			}
 			mDevice.powerUp(true);
-			Utilities.delay(150);
-			mCurrentState = mStandbyI;
+			Utilities.delayInMicroseconds(150);
+			changeState(mStandbyI);
 		}
 
+		@Override
 		public void ToRxMode(){
 			ToStandbyI();
 			mCurrentState.ToRxMode();
 		}
 
+		@Override
 		public void ToTxMode(){
 			ToStandbyI();
 			mCurrentState.ToTxMode();
@@ -375,15 +408,24 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	}
 
 	private class StandbyI implements StateBase {
+		
+		@Override
+		public String toString() {
+			return "StandbyI";
+		}
+		
+		@Override
 		public void ApplyTo(StateBase other) {
 			other.ToStandbyI();
 		}
 		
+		@Override
 		public void ToOff() {
 			ToPowerDown();
 			mCurrentState.ToOff();
 		}
 
+		@Override
 		public void ToPowerDown(){
 			mDevice.powerUp(false);
 			try {
@@ -391,16 +433,18 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-			mCurrentState = mPowerDown;
+			changeState(mPowerDown);
 		}
 
+		@Override
 		public void ToStandbyI() {
 			// self nothing to do
 		}
 
+		@Override
 		public void ToRxMode(){
 			if(!interruptPin()) {
-				s_logger.warn("IRQ already set before StandbyI::ToRxMode transition - status = {} ", mDevice.status());
+				LOG.warn("IRQ already set before StandbyI::ToRxMode transition - status = {} ", mDevice.status());
 			}
 
 			mDevice.clearDataReady();
@@ -408,27 +452,28 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 			mDevice.clearRetransmitsExceeded();
 
 			if(!interruptPin()) {
-				s_logger.error("IRQ still set even after a clear before StandbyI::ToRxMode transition - status = {}", mDevice.status());
+				LOG.error("IRQ still set even after a clear before StandbyI::ToRxMode transition - status = {}", mDevice.status());
 			}
 
 			mInterruptState.set(InterruptState.Rx);
 
 			mDevice.transceiverMode(RfDevice.TransceiverMode.RX_MODE);
 			chipEnable(true);
-			Utilities.delay(130);
-			mCurrentState = mRxMode;
-			s_logger.debug("RxMode");
+			Utilities.delayInMicroseconds(130);
+			changeState(mRxMode);
+			LOG.debug("RxMode");
 		}
 
+		@Override
 		public void ToTxMode(){
 			if (mDevice.isTransmitFifoEmpty())
 			{
-				s_logger.warn("StandbyI::ToTxMode: transmit fifo is empty => StandbyI !");
+				LOG.warn("StandbyI::ToTxMode: transmit fifo is empty => StandbyI !");
 				return;
 			}
 
 			if(!interruptPin()){
-				s_logger.warn("StandbyI::ToTxMode: InterruptPin still set => clear all !");
+				LOG.warn("StandbyI::ToTxMode: InterruptPin still set => clear all !");
 				mDevice.clearDataReady();
 				mDevice.clearDataSent();
 				mDevice.clearRetransmitsExceeded();
@@ -437,27 +482,37 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 			mInterruptState.set(InterruptState.Tx);
 			mDevice.transceiverMode(RfDevice.TransceiverMode.TX_MODE);
 			chipEnable(true);
-			Utilities.delay(140);
-			mCurrentState = mTxMode;
+			Utilities.delayInMicroseconds(140);
+			changeState(mTxMode);
 		}
 
 	}
 
 	private class RxMode implements StateBase {
+		
+		@Override
+		public String toString() {
+			return "RxMode";
+		}
+		
+		@Override
 		public void ApplyTo(StateBase other) {
 			other.ToRxMode();
 		}
 		
+		@Override
 		public void ToOff() {
 			ToPowerDown();
 			mCurrentState.ToOff();
 		}
 		
+		@Override
 		public void ToPowerDown(){
 			ToStandbyI();
 			mCurrentState.ToPowerDown();
 		}
 
+		@Override
 		public void ToStandbyI(){
 			chipEnable(false);
 			mDevice.transceiverMode(RfDevice.TransceiverMode.TX_MODE);
@@ -470,14 +525,16 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 				mDevice.clearRetransmitsExceeded();
 			}
 
-			Utilities.delay(10);
-			mCurrentState = mStandbyI;
+			Utilities.delayInMicroseconds(10);
+			changeState(mStandbyI);
 		}
 
+		@Override
 		public void ToRxMode(){
 			// self nothing to do
 		}
 
+		@Override
 		public void ToTxMode(){
 			ToStandbyI();
 			mCurrentState.ToTxMode();
@@ -486,28 +543,43 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	}
 
 	private class TxMode implements StateBase{
-		public void ApplyTo(StateBase other) {other.ToTxMode();}
+		
+		@Override
+		public String toString() {
+			return "TxMode";
+		}
+		
+		@Override
+		public void ApplyTo(StateBase other) {
+			other.ToTxMode();
+		}
+		
+		@Override
 		public void ToPowerDown(){
 			ToStandbyI();
 			mCurrentState.ToPowerDown();
 		}
 		
+		@Override
 		public void ToOff() {
 			ToPowerDown();
 			mCurrentState.ToOff();
 		}
 
+		@Override
 		public void ToStandbyI(){
 			chipEnable(false);
-			Utilities.delay(10);
-			mCurrentState = mStandbyI;
+			Utilities.delayInMicroseconds(10);
+			changeState(mStandbyI);
 		}
 
+		@Override
 		public void ToRxMode(){
 			ToStandbyI();
 			mCurrentState.ToRxMode();
 		}
 
+		@Override
 		public void ToTxMode(){
 			// self nothing to do
 		}

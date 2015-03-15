@@ -50,7 +50,7 @@ public class RfSocket implements PacketSocket, ConfigurableComponent {
 	protected void activate(ComponentContext componentContext) {
 		LOG.info("Bundle " + APP_ID + " has started");
 		try {
-			mRfPacketSocket = new RfPacketSocketFactoryImpl().create();
+			mRfPacketSocket = new RfPacketSocketFactoryImpl().create(0);
 		} catch (Exception e) {
 			LOG.error("creating the RF packet socket failed", e);
 		}

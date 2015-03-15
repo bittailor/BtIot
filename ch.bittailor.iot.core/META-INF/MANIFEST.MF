@@ -11,4 +11,5 @@ Import-Package: jdk.dio;version="1.0.0",
  jdk.dio.spibus;version="1.0.0",
  org.slf4j;version="1.6.4"
 Export-Package: ch.bittailor.iot.core.devices.nrf24,
+ ch.bittailor.iot.core.utils,
  ch.bittailor.iot.core.wsn

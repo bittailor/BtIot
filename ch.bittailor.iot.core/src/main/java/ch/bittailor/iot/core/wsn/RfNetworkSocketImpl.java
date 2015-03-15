@@ -12,7 +12,7 @@ import ch.bittailor.iot.core.devices.nrf24.RfPipe;
 import ch.bittailor.iot.core.utils.Utilities;
 
 public class RfNetworkSocketImpl implements RfNetworkSocket {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RfDeviceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RfDeviceImpl.class);
 
 	
 	private final int HEADER_SIZE = 3;
@@ -85,20 +85,20 @@ public class RfNetworkSocketImpl implements RfNetworkSocket {
 	boolean sendInternal(RfSocketAddress destination, ByteBuffer packet) {
 		RfPipe pipe = mRouting.calculateRoutingPipe(mAddress, destination);
 		int counter = 0;
-		while(!mController.write(pipe, packet)) {
+		while(!mController.write(pipe, packet.duplicate())) {
 			counter++;
 			if (counter >= 5) {
-				LOGGER.warn("NetworkSocket send {} => {} failed after {} retries",
+				LOG.warn("NetworkSocket send {} => {} failed after {} retries",
 						new Object [] {mAddress,
 						destination,
 						counter});
 				return false;
 			}
-			LOGGER.warn("NetworkSocket send {} => {} failed do retry {} after delay",
+			LOG.warn("NetworkSocket send {} => {} failed do retry {} after delay",
 					new Object [] {mAddress,
 					destination,
 					counter});
-			Utilities.delay(counter*100);
+			Utilities.delayInMicroseconds(counter*100);
 		}
 		return true;
 	}
@@ -114,13 +114,13 @@ public class RfNetworkSocketImpl implements RfNetworkSocket {
 		RfSocketAddress source = new RfSocketAddress(packet.get());
 		RfSocketAddress destination = new RfSocketAddress(packet.get());
 		packet.get();	
-		if (destination.equals(mAddress)) {
-			LOGGER.debug("route  {} => {} ", source, destination);
+		if (!destination.equals(mAddress)) {
+			LOG.debug("route  {} => {} ", source, destination);
 			packet.reset();
 			sendInternal(destination,packet);
 			return;
 		}
-		LOGGER.debug("receive  {} => {} ", source, destination);	
+		LOG.debug("receive  {} => {} ", source, destination);	
 		receiveInternal(source, packet.slice());
 	}
 

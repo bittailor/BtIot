@@ -1,15 +1,44 @@
 package ch.bittailor.iot.core.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.TimeUnit;
 
 public class Utilities {
-	
+	public final static String STRING_ENCODING = "UTF-8";	
 	final private static char[] s_hexArray = "0123456789ABCDEF".toCharArray();
 	
-	public static void delay(long millis) {
+	public static String getString(ByteBuffer buffer) {
+		byte[] raw = new byte[buffer.remaining()];
+  	buffer.get(raw);
+  	try {
+			return new String(raw, Utilities.STRING_ENCODING);
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static void putString(ByteBuffer buffer, String string) {
 		try {
-			Thread.sleep(millis);
+			buffer.put(string.getBytes(Utilities.STRING_ENCODING));
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static void delayInMilliseconds(long milliseconds) {
+		try {
+			TimeUnit.MILLISECONDS.sleep(milliseconds);
 		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static void delayInMicroseconds(long microseconds) {
+		try {
+			TimeUnit.MICROSECONDS.sleep(microseconds);
+		}
+			catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}

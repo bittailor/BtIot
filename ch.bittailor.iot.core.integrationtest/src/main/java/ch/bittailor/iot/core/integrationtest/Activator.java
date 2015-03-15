@@ -14,6 +14,9 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleWiring;
 
+import ch.bittailor.iot.core.integrationtest.devices.nrf24.RfDeviceTest;
+import ch.bittailor.iot.core.integrationtest.wsn.RfPacketSocketImplTest;
+
 public class Activator implements BundleActivator {
 
 	
@@ -79,8 +82,9 @@ public class Activator implements BundleActivator {
 		System.out.println("... done");
 		
 		
+		//Result result = jUnitCore.run(RfDeviceTest.class);
+		//Result result = jUnitCore.run(RfPacketSocketImplTest.class);
 		
-//		Result result = jUnitCore.run(RfDeviceTest.class);
 		Result result = jUnitCore.run(testClasses.toArray(new Class<?>[0]));
 		if(result.getFailureCount() == 0){
 			System.out.println("*** ALL " + result.getRunCount() + " TESTS PASSED ***");

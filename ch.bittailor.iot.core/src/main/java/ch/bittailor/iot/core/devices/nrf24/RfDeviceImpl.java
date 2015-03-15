@@ -12,7 +12,7 @@ import ch.bittailor.iot.core.devices.nrf24.RfAddress;
 import ch.bittailor.iot.core.devices.nrf24.RfPipe;
 
 public class RfDeviceImpl implements RfDevice {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RfDeviceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(RfDeviceImpl.class);
 
 	private final SPIDevice mSpi;
 	
@@ -284,6 +284,7 @@ public class RfDeviceImpl implements RfDevice {
 
 	@Override
 	public int writeTransmitPayload(ByteBuffer data) {
+		LOG.debug("write buffer remaining is {}", data.remaining());
 		int dataSize;
 		if (data.remaining() <= MAX_PAYLOAD_SIZE) {
 			dataSize = data.remaining();
@@ -295,7 +296,7 @@ public class RfDeviceImpl implements RfDevice {
 		buffer[0] = Commands.CMD_W_TX_PAYLOAD.word;
 		data.get(buffer, 1 ,dataSize);
 		ByteBuffer txBuffer = ByteBuffer.wrap(buffer);
-		ByteBuffer rxBuffer = ByteBuffer.allocate(MAX_PAYLOAD_SIZE + 1);
+		ByteBuffer rxBuffer = ByteBuffer.allocate(dataSize+1);
 		writeAndRead(txBuffer, rxBuffer);
 		return dataSize;
 	}
@@ -327,21 +328,22 @@ public class RfDeviceImpl implements RfDevice {
 	@Override
 	public ByteBuffer readReceivePayload() {	
 		int availableSize = availableReceivePayload();
+		LOG.debug("readReceivePayload: availableReceivePayload() {}", availableSize);
 		if (0 >= availableSize ||  availableSize > MAX_PAYLOAD_SIZE) {
-			LOGGER.warn("invalid availableSize : 0 >= {} > {} => retry read available receive payload",
+			LOG.warn("invalid availableSize : 0 >= {} > {} => retry read available receive payload",
 					availableSize, MAX_PAYLOAD_SIZE); 
 			availableSize = availableReceivePayload();
 		}
 		if (0 >= availableSize ||  availableSize > MAX_PAYLOAD_SIZE) {
-			LOGGER.error("invalid availableSize : 0 >= {} > {} => flush the RX FIFO!",
+			LOG.error("invalid availableSize : 0 >= {} > {} => flush the RX FIFO!",
 					availableSize,
 					MAX_PAYLOAD_SIZE);
 			flushReceiveFifo();
 			return ByteBuffer.allocate(0);
 		}
 
-		ByteBuffer txBuffer = ByteBuffer.allocate(MAX_PAYLOAD_SIZE + 1);
-		ByteBuffer rxBuffer = ByteBuffer.allocate(MAX_PAYLOAD_SIZE + 1);
+		ByteBuffer txBuffer = ByteBuffer.allocate(availableSize + 1);
+		ByteBuffer rxBuffer = ByteBuffer.allocate(availableSize + 1);
 		txBuffer.put(Commands.CMD_R_RX_PAYLOAD.word);
 		for (int i = 0 ; i < availableSize; i++) {
 			txBuffer.put(Commands.CMD_NOP.word);
@@ -566,7 +568,9 @@ public class RfDeviceImpl implements RfDevice {
 
 	private int writeAndRead(java.nio.ByteBuffer src, java.nio.ByteBuffer dst) {
 		try {
-			return mSpi.writeAndRead(src,dst);
+			int bytesRead = mSpi.writeAndRead(src,dst);
+			dst.flip();
+			return bytesRead;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

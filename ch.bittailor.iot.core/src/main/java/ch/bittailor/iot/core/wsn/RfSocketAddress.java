@@ -38,6 +38,11 @@ public class RfSocketAddress {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return Integer.toString(mId);
+	}
 
 	private static int calculateLevel(int iId) {
 	   if (iId <   1) return 0;

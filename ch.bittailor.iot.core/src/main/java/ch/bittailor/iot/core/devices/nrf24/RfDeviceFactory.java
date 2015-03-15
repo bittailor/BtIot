@@ -9,12 +9,14 @@ public class RfDeviceFactory {
 
 	public RfDevice create() {
 		try {
-			SPIDeviceConfig spiConfig = new SPIDeviceConfig(0, 0,
-					SPIDeviceConfig.CS_ACTIVE_LOW,
-					500000,
-					3,  
-					8,
-					Device.BIG_ENDIAN);
+			SPIDeviceConfig spiConfig = new SPIDeviceConfig(
+					0, 
+					0,
+					SPIDeviceConfig.CS_ACTIVE_LOW,  //
+					8000000,            						// clockFrequency
+					0,                 						 	// mode 
+					8,                  						// wordLength	
+					Device.BIG_ENDIAN); 						// bitOrdering
 			SPIDevice spi = DeviceManager.open(SPIDevice.class, spiConfig);
 			return new RfDeviceImpl(spi);
 		} catch (Exception e) {
