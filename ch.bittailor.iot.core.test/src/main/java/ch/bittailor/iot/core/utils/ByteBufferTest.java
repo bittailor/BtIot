@@ -1,4 +1,4 @@
-package ch.bittailor.iot.san.test;
+package ch.bittailor.iot.core.utils;
 
 import static org.junit.Assert.*;
 
