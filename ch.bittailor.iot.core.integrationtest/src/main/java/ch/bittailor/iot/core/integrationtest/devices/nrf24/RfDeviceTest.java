@@ -33,7 +33,7 @@ public class RfDeviceTest {
 	}
 	
 	@After
-	public void After() throws IOException, InterruptedException {
+	public void After() throws Exception, InterruptedException {
 		mPower.setValue(false);
 		mRfDevice.close();
 		mPower.close();

@@ -4,7 +4,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +34,7 @@ public class RfPacketSocketImplTest {
 	}
 	
 	@After
-	public void After() throws IOException, InterruptedException {
+	public void After() throws Exception, InterruptedException {
 		mSocket.close();
 		LOG.info("Closed rf packet socket\n\n\n");			
 		Thread.sleep(500);

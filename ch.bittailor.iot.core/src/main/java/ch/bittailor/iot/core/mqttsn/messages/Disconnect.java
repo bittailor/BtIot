@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import ch.bittailor.iot.core.utils.Utilities;
 
-public class Disconnect implements Message {
+public class Disconnect extends MessageBase {
   boolean mWithDuration;
   int mDuration;
 	
@@ -22,19 +22,24 @@ public class Disconnect implements Message {
 		mDuration = Utilities.getUnsignedShort(buffer);
 	}
 	
+	
+	
 	@Override
-	public void writeToBuffer(ByteBuffer buffer) {
-		int length = 2;
-
-    if(mWithDuration) {
-    	length = 4;
+	protected int calculateLength() {
+		if(mWithDuration) {
+    	return 4;
     }
+    return 2;
+	}
 
-    buffer.put((byte)length);
+	@Override
+	public ByteBuffer writeToByteBuffer(ByteBuffer buffer) {
+    buffer.put((byte)calculateLength());
     buffer.put(MsgType.DISCONNECT.octet);
     if(mWithDuration) {
     	Utilities.putUnsignedShort(buffer, mDuration);
     }
+    return buffer;
 	}
 
 	@Override

@@ -1,9 +1,8 @@
 package ch.bittailor.iot.core.wsn;
 
-import java.io.Closeable;
 import java.nio.ByteBuffer;
 
-public interface RfPacketSocket extends Closeable {
+public interface RfPacketSocket extends AutoCloseable {
 	
 	int payloadCapacity();
 	int send(RfSocketAddress destination, ByteBuffer payload);

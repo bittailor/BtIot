@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import ch.bittailor.iot.core.utils.Utilities;
 
-public class Register implements Message {
+public class Register extends MessageBase {
   private int mTopicId;
   private int mMsgId;
   private String mTopicName;
@@ -22,13 +22,18 @@ public class Register implements Message {
 	}
 
 	@Override
-	public void writeToBuffer(ByteBuffer buffer) {
-  	int length = 6 + mTopicName.length();
-  	buffer.put((byte)length);
+	protected int calculateLength() {
+		return 6 + Utilities.getBufferLengthForString(mTopicName);
+	}
+
+	@Override
+	public ByteBuffer writeToByteBuffer(ByteBuffer buffer) {
+  	buffer.put((byte)calculateLength());
   	buffer.put(MsgType.REGISTER.octet);
   	Utilities.putUnsignedShort(buffer, mTopicId);
   	Utilities.putUnsignedShort(buffer, mMsgId);
-  	Utilities.putString(buffer, mTopicName);		
+  	Utilities.putString(buffer, mTopicName);	
+  	return buffer;
 	}
 
 	@Override

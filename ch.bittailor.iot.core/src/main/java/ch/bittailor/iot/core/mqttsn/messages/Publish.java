@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import ch.bittailor.iot.core.utils.Utilities;
 
-public class Publish implements Message{
+public class Publish extends MessageBase{
 	private Flags mFlags;
 	private int mTopicId;
   private int mMsgId;
@@ -25,14 +25,19 @@ public class Publish implements Message{
 	}
 	
 	@Override
-	public void writeToBuffer(ByteBuffer buffer) {
-		int length = 7 + mData.length;
-		buffer.put((byte)length);
+	protected int calculateLength() {
+		return 7 + mData.length;
+	}
+
+	@Override
+	public ByteBuffer writeToByteBuffer(ByteBuffer buffer) {
+		buffer.put((byte)calculateLength());
 		buffer.put(MsgType.PUBLISH.octet);
 		buffer.put(mFlags.asByte());
 		Utilities.putUnsignedShort(buffer, mTopicId);
 		Utilities.putUnsignedShort(buffer, mMsgId);
 		buffer.put(mData);
+		return buffer;
 	}
 
 	@Override

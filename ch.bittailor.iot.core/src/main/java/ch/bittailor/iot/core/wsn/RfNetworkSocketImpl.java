@@ -1,6 +1,5 @@
 package ch.bittailor.iot.core.wsn;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.slf4j.Logger;
@@ -38,7 +37,7 @@ public class RfNetworkSocketImpl implements RfNetworkSocket {
 	
 	
 	@Override
-	public void close() throws IOException {
+	public void close() throws Exception {
 		mController.close();	
 	}
 

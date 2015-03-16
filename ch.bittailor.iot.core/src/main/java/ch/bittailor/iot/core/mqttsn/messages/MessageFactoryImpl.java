@@ -38,7 +38,7 @@ public class MessageFactoryImpl implements MessageFactory {
 		case CONNECT: return new Connect(buffer);
 		case DISCONNECT: return new Disconnect(buffer);
 		case GWINFO: throw new MessageFactoryException("MsgType " + msgType + " not implemented yet");
-		case PINGREQ: throw new MessageFactoryException("MsgType " + msgType + " not implemented yet");
+		case PINGREQ: return new PingReq(buffer);
 		case PINGRESP: throw new MessageFactoryException("MsgType " + msgType + " not implemented yet");
 		case PUBACK: throw new MessageFactoryException("MsgType " + msgType + " not implemented yet");
 		case PUBCOMP: throw new MessageFactoryException("MsgType " + msgType + " not implemented yet");

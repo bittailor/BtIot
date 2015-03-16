@@ -1,13 +1,10 @@
 package ch.bittailor.iot.core.devices.nrf24;
 
-import java.io.Closeable;
 import java.nio.ByteBuffer;
 
-import ch.bittailor.iot.core.devices.nrf24.RfAddress;
-import ch.bittailor.iot.core.devices.nrf24.RfPipe;
 import ch.bittailor.iot.core.utils.Utilities;
 
-public interface RfDevice extends Closeable {
+public interface RfDevice extends AutoCloseable {
 	static public final int MAX_PAYLOAD_SIZE = 32;
 	
 	public enum DataRate {

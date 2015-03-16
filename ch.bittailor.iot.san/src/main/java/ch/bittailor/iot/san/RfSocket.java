@@ -1,6 +1,5 @@
 package ch.bittailor.iot.san;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -74,7 +73,7 @@ public class RfSocket implements PacketSocket, ConfigurableComponent {
 		LOG.info("Bundle " + APP_ID + " has stopped");
 		try {
 			mRfPacketSocket.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOG.error("closing the RF packet socket failed", e);
 		}
 		mRfPacketSocket = null;

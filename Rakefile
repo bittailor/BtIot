@@ -87,6 +87,11 @@ task :app_run => :app_deploy do
         end
       end
     end
+    bundle_ids.each do |id|
+      console.exec("start #{id}") do |line|
+        puts line
+      end
+    end
     puts "bundles #{bundle_ids.join(',')}"
   end
 end

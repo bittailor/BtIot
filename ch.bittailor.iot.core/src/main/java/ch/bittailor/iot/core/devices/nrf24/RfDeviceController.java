@@ -1,11 +1,10 @@
 package ch.bittailor.iot.core.devices.nrf24;
 
-import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface RfDeviceController extends Closeable {
+public interface RfDeviceController extends AutoCloseable {
 	
 	int payloadCapacity();
 	

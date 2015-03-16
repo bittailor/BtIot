@@ -1,6 +1,5 @@
 package ch.bittailor.iot.core.wsn;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -31,7 +30,7 @@ public class RfPacketSocketImpl implements RfPacketSocket {
 	}
 	
 	@Override
-	public void close() throws IOException {
+	public void close() throws Exception {
 		mNetworkSocket.stopListening();
 		mNetworkSocket.close();
 		mExecutorService.shutdown();

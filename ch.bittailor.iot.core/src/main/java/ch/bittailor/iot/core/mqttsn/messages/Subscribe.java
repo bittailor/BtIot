@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import ch.bittailor.iot.core.utils.Utilities;
 
-public class Subscribe implements Message {
+public class Subscribe extends MessageBase {
 
 	private Flags mFlags;
 	private int mMsgId;
@@ -15,15 +15,20 @@ public class Subscribe implements Message {
 		mMsgId = Utilities.getUnsignedShort(buffer);
 		mTopicName = Utilities.getString(buffer);
 	}
-   
+
 	@Override
-	public void writeToBuffer(ByteBuffer buffer) {
-    int length = 5 + mTopicName.length();
-    buffer.put((byte)length);
+	protected int calculateLength() {
+		return 5 + Utilities.getBufferLengthForString(mTopicName);
+	}
+
+	@Override
+	public ByteBuffer writeToByteBuffer(ByteBuffer buffer) {
+    buffer.put((byte)calculateLength());
     buffer.putInt(MsgType.SUBSCRIBE.octet);
     buffer.put(mFlags.asByte());
     Utilities.putUnsignedShort(buffer, mMsgId);
     Utilities.putString(buffer, mTopicName);
+    return buffer;
 	}
 
 	@Override

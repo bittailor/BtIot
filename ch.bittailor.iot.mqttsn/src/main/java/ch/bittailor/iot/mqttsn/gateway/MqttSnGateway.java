@@ -2,6 +2,7 @@ package ch.bittailor.iot.mqttsn.gateway;
 
 import java.io.IOException;
 
+import org.eclipse.kura.cloud.CloudService;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +18,11 @@ public class MqttSnGateway {
 	
 	private PacketSocket mRfSocket;
 	private Gateway mGateway;
+	private CloudService mCloudService;
 	
 	protected void activate(ComponentContext componentContext) {
 		LOG.info("Bundle " + APP_ID + " has started");
-		mGateway = new GatewayFactoryImpl().create(mRfSocket);
+		mGateway = new GatewayFactoryImpl(new MqttClientFactoryImpl(mCloudService)).create(mRfSocket);
 	}
 
 	protected void deactivate(ComponentContext componentContext) {
@@ -42,6 +44,18 @@ public class MqttSnGateway {
 		LOG.info("Bundle " + APP_ID + " RfSocket unset");
 		if (mRfSocket == rfSocket) {
 			mRfSocket = null;
+    }
+	}
+	
+	public synchronized void setCloudService(CloudService cloudService) {
+		LOG.info("Bundle " + APP_ID + " cloudService set");
+		mCloudService = cloudService;
+	}
+
+	public synchronized void unsetCloudService(CloudService cloudService) {
+		LOG.info("Bundle " + APP_ID + " cloudService unset");
+		if (mCloudService == cloudService) {
+			mCloudService = null;
     }
 	}
 

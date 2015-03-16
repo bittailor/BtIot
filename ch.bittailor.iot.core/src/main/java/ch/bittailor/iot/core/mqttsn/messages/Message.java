@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 
 public interface Message {
 
-	void writeToBuffer(ByteBuffer buffer);
+	ByteBuffer writeToByteBuffer(ByteBuffer buffer);
+	ByteBuffer toByteBuffer();
+	
   void accept(MessageVisitor vistor); 
 }

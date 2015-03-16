@@ -29,6 +29,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	private final GPIOPin mInterruptPin;
 	private final AtomicReference<InterruptState> mInterruptState;
 	private final AtomicReference<CountDownLatch> mWrittenLatch;
+	private final ReadReceiveDataRunnable mReadReceiveDataRunnable;
 	private final Off mOff; 
 	private final PowerDown mPowerDown; 
 	private final StandbyI mStandbyI; 
@@ -58,6 +59,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		
 		mInterruptState = new AtomicReference<RfDeviceControllerImpl.InterruptState>(InterruptState.Ignore);
 		mWrittenLatch = new AtomicReference<CountDownLatch>();
+		mReadReceiveDataRunnable = new ReadReceiveDataRunnable();
 		mOff = new Off();
 		mPowerDown = new PowerDown();
 		mStandbyI = new StandbyI();
@@ -68,7 +70,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	}
 	
 	@Override
-	public void close() throws IOException {
+	public void close() throws Exception {
 		mCurrentState.ToOff();
 		mDevice.close();
 		mChipEnable.close();
@@ -127,8 +129,8 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		mCurrentState.ToTxMode();
 		boolean flushTransmitFifo = false;
 		try {
-			// MaxRetry [15] * ( MaxRetryDelay [4ms] + MaxTrasnmittionTime [0.5ms]) => ~100ms
-			if(!writtenLatch.await(100, TimeUnit.MILLISECONDS)) {
+			// MaxRetry [15] * ( MaxRetryDelay [4ms] + MaxTrasnmittionTime [0.5ms]) => ~100ms * 2 = 200 ms
+			if(!writtenLatch.await(200, TimeUnit.MILLISECONDS)) {
 				mWrittenLatch.set(null);
 				flushTransmitFifo = true;
 				sentSize = 0;
@@ -212,12 +214,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 				return;
 			}
 			case Rx:{
-				mExecutor.execute(new Runnable() {
-					@Override
-					public void run() {
-						readReceiveData();
-					}
-				});
+				mExecutor.execute(mReadReceiveDataRunnable);
 				return;
 			}
 			case Tx:{
@@ -249,7 +246,6 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 					@Override
 					public void run() {
 						handleReceiveData(pipe, packet);
-
 					}
 				});	
 			}
@@ -292,11 +288,22 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		mCurrentState = newState;
 	}
 	
+	//--
+	
 	private enum InterruptState {
 		Ignore,
 		Rx,
 		Tx
 	};
+	
+	//--
+	
+	class ReadReceiveDataRunnable implements Runnable {
+		@Override
+		public void run() {
+			readReceiveData();
+		}
+	}
 
 	// -- controller state machine 
 	

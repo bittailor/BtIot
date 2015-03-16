@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import ch.bittailor.iot.core.utils.Utilities;
 
-public class Regack implements Message {
+public class Regack extends MessageBase {
   int mTopicId;
   int mMsgId;
   ReturnCode mReturnCode;
@@ -21,14 +21,21 @@ public class Regack implements Message {
 		mReturnCode = returnCode;
 	}
 
+	
+	
 	@Override
-	public void writeToBuffer(ByteBuffer buffer) {
-		int length = 7 ;
-		buffer.put((byte)length);
+	protected int calculateLength() {
+		return 7;
+	}
+
+	@Override
+	public ByteBuffer writeToByteBuffer(ByteBuffer buffer) {
+		buffer.put((byte)calculateLength());
 		buffer.put(MsgType.REGACK.octet);
 		Utilities.putUnsignedShort(buffer, mTopicId);
 		Utilities.putUnsignedShort(buffer, mMsgId);
 		buffer.put(mReturnCode.octet);
+		return buffer;
 	}
 
 	@Override

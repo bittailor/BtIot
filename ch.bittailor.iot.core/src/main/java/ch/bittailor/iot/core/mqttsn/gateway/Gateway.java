@@ -1,6 +1,5 @@
 package ch.bittailor.iot.core.mqttsn.gateway;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,10 +11,11 @@ import org.slf4j.LoggerFactory;
 import ch.bittailor.iot.core.mqttsn.messages.Message;
 import ch.bittailor.iot.core.mqttsn.messages.MessageFactory;
 import ch.bittailor.iot.core.mqttsn.messages.MessageFactoryException;
-import ch.bittailor.iot.core.wsn.RfSocketAddress;
+import ch.bittailor.iot.core.utils.Utilities;
 import ch.bittailor.iot.core.wsn.PacketSocket;
+import ch.bittailor.iot.core.wsn.RfSocketAddress;
 
-public class Gateway implements Closeable {
+public class Gateway implements AutoCloseable {
 	private static final Logger LOG = LoggerFactory.getLogger(Gateway.class);
 	
 	private final MessageFactory mMessageFactory;
@@ -53,11 +53,14 @@ public class Gateway implements Closeable {
 			return;
 		}
 		try {
+			LOG.info("packet received 0x{}", Utilities.toHexString(payload));
+			
+			
 			Message message = mMessageFactory.createMessage(payload);		
 			GatewayConnection connection = mConnections.get(source);
 			if(connection == null) {
-				LOG.debug("Create new gateway connection for address " + source) ;
-				connection = mConnectionFactory.create(source);
+				LOG.info("Create new gateway connection for address " + source) ;
+				connection = mConnectionFactory.create(source, mPacketSocket);
 				mConnections.put(source, connection);
 			}
 			connection.handle(message);	

@@ -36,7 +36,7 @@ public class ConnectTest {
 	public void Connect_() {
 		ByteBuffer buffer = ByteBuffer.allocate(20);
 		Connect connect = new Connect("YetAnother");
-		connect.writeToBuffer(buffer);
+		connect.writeToByteBuffer(buffer);
 		buffer.flip();
 		
 		

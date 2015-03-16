@@ -8,6 +8,14 @@ import ch.bittailor.iot.core.mqttsn.messages.MessageFactoryImpl;
 import ch.bittailor.iot.core.wsn.PacketSocket;
 
 public class GatewayFactoryImpl {
+	
+	private final MqttClientFactory mMqttClientFactory;
+
+	public GatewayFactoryImpl(MqttClientFactory mqttClientFactory) {
+		super();
+		mMqttClientFactory = mqttClientFactory;
+	}
+
 	public Gateway create(PacketSocket socket) {
 		
 		ExecutorService executor = Executors.newSingleThreadExecutor( new ThreadFactory() {	
@@ -17,9 +25,11 @@ public class GatewayFactoryImpl {
 			}
 		});
 		
+		
+		
 		return new Gateway(
 				new MessageFactoryImpl(), 
-				new ConnectionFactoryImpl(),
+				new ConnectionFactoryImpl(mMqttClientFactory),
 				socket, 
 				executor);
 	}

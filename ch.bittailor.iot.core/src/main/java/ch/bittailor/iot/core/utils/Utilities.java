@@ -18,6 +18,14 @@ public class Utilities {
 		}
 	}
 	
+	public static int getBufferLengthForString(String string) {
+		try {
+			return string.getBytes(STRING_ENCODING).length;
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public static void putString(ByteBuffer buffer, String string) {
 		try {
 			buffer.put(string.getBytes(Utilities.STRING_ENCODING));
