@@ -17,8 +17,13 @@ public class Publish extends MessageBase{
   	mData = Utilities.getBytes(buffer); 
   }
   
-	public Publish(Flags flags, int topicId, int msgId, byte[] data) {
-		mFlags = flags;
+  public Publish(int qos, boolean retain, int topicId, int msgId, byte[] data) {
+		mFlags = new Flags();
+		mFlags.setDup(false);
+		mFlags.setQos(qos);
+		mFlags.setRetain(retain);
+		mFlags.setTopicIdType(TopicIdType.NORMAL_TOPIC_ID);
+		
 		mTopicId = topicId;
 		mMsgId = msgId;
 		mData = data;

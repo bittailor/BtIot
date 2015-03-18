@@ -21,19 +21,37 @@ public class RfPacketSocketImpl implements RfPacketSocket {
 		mExecutorService = executorService;
 		mNetworkSocket = networkSocket;
 		mListener = new AtomicReference<RfPacketSocket.Listener>(new NullListener());
-		mNetworkSocket.startListening(new RfNetworkSocket.Listener() {
-			@Override
-			public void packetReceived(RfSocketAddress source, ByteBuffer packet) {
-				mListener.get().received(source, packet);
-			}
-		});
+		
+		try {
+			mExecutorService.submit(new Callable<Boolean>() {
+				@Override
+				public Boolean call() throws Exception {
+					mNetworkSocket.startListening(new RfNetworkSocket.Listener() {
+						@Override
+						public void packetReceived(RfSocketAddress source, ByteBuffer packet) {
+							mListener.get().received(source, packet);
+						}
+					});				
+					return true;
+				}
+			}).get();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	@Override
 	public void close() throws Exception {
-		mNetworkSocket.stopListening();
-		mNetworkSocket.close();
-		mExecutorService.shutdown();
+		mExecutorService.submit(new Callable<Boolean>() {
+
+			@Override
+			public Boolean call() throws Exception {
+				mNetworkSocket.stopListening();
+				mNetworkSocket.close();
+				mExecutorService.shutdown();				
+				return true;
+			}
+		}).get();
 	}
 	
 	@Override

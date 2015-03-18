@@ -2,6 +2,8 @@ package ch.bittailor.iot.core.devices.nrf24;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +42,8 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	private Configuration mConfiguration;
 	private Listener mListener;
 
+	private final WatchdogRunnable mWatchdogRunnable;
+	private final Timer mWatchdogTimer;
 	
 	public RfDeviceControllerImpl(Executor executor, RfDevice device, GPIOPin power ,GPIOPin chipEnable, GPIOPin interruptPin) {
 		mExecutor = executor;
@@ -67,10 +71,22 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		mTxMode = new TxMode();
 		mCurrentState = mOff;
 		chipEnable(false);
+		
+		mWatchdogRunnable = new WatchdogRunnable();
+		mWatchdogTimer = new Timer("RfDevice ontroller info dumper", true);
+		mWatchdogTimer.scheduleAtFixedRate(new TimerTask() {		
+			@Override
+			public void run() {
+				mExecutor.execute(mWatchdogRunnable);
+			}
+		}, 1000, 1000);
+		
 	}
 	
 	@Override
 	public void close() throws Exception {
+		mWatchdogTimer.cancel();
+		mWatchdogTimer.purge();
 		mCurrentState.ToOff();
 		mDevice.close();
 		mChipEnable.close();
@@ -230,12 +246,11 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	}
 	
 	private void readReceiveData() {
-		//LOG.debug("receive payload status = {}, isReceiveFifoEmpty = {} ", mDevice.status().toString(), mDevice.isReceiveFifoEmpty());
-		//LOG.debug("   transceiverMode = {}, powerUp = {} ", mDevice.transceiverMode().name(), mDevice.powerUp());
 		while(!mDevice.isReceiveFifoEmpty()) {
 			LOG.debug("receive payload ...");
 			final RfPipe pipe = mDevice.readReceivePipe();
 			final ByteBuffer packet = mDevice.readReceivePayload();
+			mDevice.clearDataReady();
 			if(packet.remaining() <= 0) {
 				LOG.error("invalid read size of {} => drop packet", packet.remaining());
 			} else {
@@ -249,7 +264,21 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 					}
 				});	
 			}
-			mDevice.clearDataReady();	
+		}
+	}
+	
+	private void watchdogCheck() {
+		LOG.debug("");
+		LOG.debug("Info Dump");
+		LOG.debug("   status = {}", mDevice.status().toString());
+		LOG.debug("   isReceiveFifoEmpty = {} ", mDevice.isReceiveFifoEmpty());
+		LOG.debug("   isReceiveFifoFull = {} ", mDevice.isReceiveFifoFull());
+		LOG.debug("   transceiverMode = {}", mDevice.transceiverMode().name());
+		LOG.debug("   powerUp = {} ", mDevice.powerUp());
+		LOG.debug("   interruptPin = {} ", interruptPin());
+		LOG.debug("");		
+		if(!mDevice.isReceiveFifoEmpty()) {
+			readReceiveData();
 		}
 	}
 
@@ -302,6 +331,13 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		@Override
 		public void run() {
 			readReceiveData();
+		}
+	}
+	
+	class WatchdogRunnable implements Runnable {
+		@Override
+		public void run() {
+			watchdogCheck();
 		}
 	}
 

@@ -8,12 +8,12 @@ public class Disconnect extends MessageBase {
   boolean mWithDuration;
   int mDuration;
 	
-  Disconnect() {
+  public Disconnect() {
   	mWithDuration = false;
   	mDuration = 0;
   }
 	
-	Disconnect(ByteBuffer buffer) {
+  public Disconnect(ByteBuffer buffer) {
 		if(buffer.remaining() == 0) {
 			mWithDuration = false;
 			return;

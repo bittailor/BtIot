@@ -10,6 +10,14 @@ public class Suback extends MessageBase {
 	private int mMsgId;
 	private ReturnCode mReturnCode;
 
+	public Suback(int qos, int topicId, int msgId, ReturnCode returnCode) {
+		mFlags = new Flags();
+		mFlags.setQos(qos);
+		mTopicId = topicId;
+		mMsgId = msgId;
+		mReturnCode = returnCode;
+	}
+	
 	public Suback(ByteBuffer buffer) {
 		mFlags = new Flags(buffer.get());
 		mTopicId = Utilities.getUnsignedShort(buffer);
@@ -37,6 +45,15 @@ public class Suback extends MessageBase {
 	public void accept(MessageVisitor vistor) {
 		vistor.visit(this);
 
+	}
+	
+	public int getQos() {
+		return mFlags.getQos();
+	}
+
+
+	public void setQos(int qos) {
+		mFlags.setQos(qos);
 	}
 
 }

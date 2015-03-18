@@ -10,4 +10,5 @@ public interface MessageVisitor {
 	void visit(Subscribe subscribe);
 	void visit(Suback suback);
 	void visit(PingReq pingreq);
+	void visit(PingResp pingResp);
 }
