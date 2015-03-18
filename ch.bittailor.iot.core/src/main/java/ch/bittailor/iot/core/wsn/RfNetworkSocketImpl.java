@@ -87,7 +87,7 @@ public class RfNetworkSocketImpl implements RfNetworkSocket {
 		while(!mController.write(pipe, packet.duplicate())) {
 			counter++;
 			if (counter >= 5) {
-				LOG.warn("NetworkSocket send {} => {} failed after {} retries",
+				LOG.error("NetworkSocket send {} => {} failed after {} retries",
 						new Object [] {mAddress,
 						destination,
 						counter});

@@ -333,7 +333,7 @@ public class RfDeviceImpl implements RfDevice {
 	@Override
 	public ByteBuffer readReceivePayload() {			
 		int availableSize = availableReceivePayload();
-		LOG.info("readReceivePayload availableSize = {}",availableSize);
+		LOG.debug("readReceivePayload availableSize = {}",availableSize);
 		if (0 >= availableSize ||  availableSize > MAX_PAYLOAD_SIZE) {
 			LOG.warn("invalid availableSize : 0 >= {} > {} => retry read available receive payload",
 					availableSize, MAX_PAYLOAD_SIZE); 

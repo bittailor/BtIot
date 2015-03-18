@@ -124,9 +124,12 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	private int transmitPacket(RfPipe pipe, ByteBuffer packet) {
 		StateBase originalState = mCurrentState;
 		int sentSize = packet.remaining();
-		LOG.debug("...send payload of size {} with ", sentSize, Utilities.toHexString(packet));
-		LOG.debug("transceiverMode {}", mDevice.transceiverMode());
-		LOG.debug("write current state is {}", mCurrentState.getClass().getName());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("...send payload of size {} with ", sentSize, Utilities.toHexString(packet));
+			LOG.debug("   transceiverMode = {}", mDevice.transceiverMode());
+			LOG.debug("   current state = {}", mCurrentState.getClass().getName());
+		}
+		
 
 		mCurrentState.ToStandbyI();
 
@@ -174,7 +177,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		if (status.retransmitsExceeded()) {
 			mDevice.clearRetransmitsExceeded();
 			flushTransmitFifo = true;
-			LOG.warn("transmitPacket: send failed retransmits exceeded!");
+			LOG.warn("transmitPacket - send failed retransmits exceeded!");
 			sentSize = 0;
 		}
 
@@ -208,7 +211,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	
 	private void configureDevice() {
 
-		LOG.info("Rf24DeviceController::configureDevice - channel is {}", mConfiguration.mChannel);
+		LOG.info("configureDevice - channel = {}", mConfiguration.mChannel);
 
 		mDevice.dynamicPayloadFeatureEnabled(true);
 		mDevice.autoRetransmitDelay(mConfiguration.mAutoRetransmitDelay);
@@ -231,7 +234,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	
 	private void onInterrupt() {
 		InterruptState interruptState =mInterruptState.get();
-		LOG.info("onInterrupt - InterruptState = {}", interruptState);
+		LOG.debug("onInterrupt - InterruptState = {}", interruptState);
 		switch (interruptState) {
 			case Ignore: {
 				LOG.warn("IRQ in InterruptState Ignore");
@@ -254,19 +257,22 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	}
 	
 	private void readReceiveData(boolean fromWatchdog) {
-		LOG.info("<start> receive payload status = 0x{} fromWatchdog = {} ...", mDevice.status(), fromWatchdog);
-		LOG.info("                        isReceiveFifoEmpty = {} , fifoStatus = 0x{}", mDevice.isReceiveFifoEmpty(), mDevice.fifoStatus());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("<start> receive payload status = 0x{} fromWatchdog = {} ...", mDevice.status(), fromWatchdog);
+			LOG.debug("                        isReceiveFifoEmpty = {} , fifoStatus = 0x{}", mDevice.isReceiveFifoEmpty(), mDevice.fifoStatus());
+		}
 		
 		while(!mDevice.isReceiveFifoEmpty()) {			
-			LOG.info(" ... receive payload ...");
+			LOG.debug(" ... receive payload ...");
 			final RfPipe pipe = mDevice.readReceivePipe();
 			final ByteBuffer packet = mDevice.readReceivePayload();
 			mDevice.clearDataReady();
 			if(packet.remaining() <= 0) {
 				LOG.error("invalid read size of {} => drop packet", packet.remaining());
 			} else {
-				LOG.info("... payload received of size {} ", packet.remaining());
-				LOG.info("... payload received of with {}", Utilities.toHexString(packet));
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("... payload received of size {} with {} ", packet.remaining(), Utilities.toHexString(packet));
+				}
 				mExecutor.execute(new Runnable() {				
 					@Override
 					public void run() {
@@ -275,9 +281,6 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 				});	
 			}
 		}
-		LOG.info("<end> receive payload status = 0x{} fromWatchdog = {} ...", mDevice.status(), fromWatchdog);
-		LOG.info("                      isReceiveFifoEmpty = {} , fifoStatus = 0x{}", mDevice.isReceiveFifoEmpty(), mDevice.fifoStatus());
-		
 	}
 	
 	private void watchdogCheck() {	
@@ -287,15 +290,17 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	}
 	
 	private void dumpInfo() {
-		LOG.info("");
-		LOG.info("Info Dump");
-		LOG.info("   status = {}", mDevice.status().toString());
-		LOG.info("   isReceiveFifoEmpty = {} ", mDevice.isReceiveFifoEmpty());
-		LOG.info("   isReceiveFifoFull = {} ", mDevice.isReceiveFifoFull());
-		LOG.info("   transceiverMode = {}", mDevice.transceiverMode().name());
-		LOG.info("   powerUp = {} ", mDevice.powerUp());
-		LOG.info("   interruptPin = {} ", interruptPin());
-		LOG.info("");		
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("");
+			LOG.debug("Info Dump");
+			LOG.debug("   status = {}", mDevice.status().toString());
+			LOG.debug("   isReceiveFifoEmpty = {} ", mDevice.isReceiveFifoEmpty());
+			LOG.debug("   isReceiveFifoFull = {} ", mDevice.isReceiveFifoFull());
+			LOG.debug("   transceiverMode = {}", mDevice.transceiverMode().name());
+			LOG.debug("   powerUp = {} ", mDevice.powerUp());
+			LOG.debug("   interruptPin = {} ", interruptPin());
+			LOG.debug("");	
+		}
 	}
 
 	private void handleReceiveData(RfPipe pipe, ByteBuffer packet) {
@@ -529,7 +534,6 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 			chipEnable(true);
 			Utilities.delayInMicroseconds(130);
 			changeState(mRxMode);
-			LOG.debug("RxMode");
 		}
 
 		@Override
