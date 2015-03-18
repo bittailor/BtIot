@@ -84,7 +84,7 @@ public class Utilities {
         for (int i = 0; i < size; i++)
         {
             final int aByte = bytes.get(i+offset);
-            hexChars[i * 2] = s_hexArray[aByte >>> 4];
+            hexChars[i * 2] = s_hexArray[(aByte & 0xF0) >>> 4];
 	        hexChars[i * 2 + 1] = s_hexArray[aByte & 0x0F];
             
         }
