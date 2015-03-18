@@ -28,7 +28,7 @@ public class Register extends MessageBase {
 
 	@Override
 	public ByteBuffer writeToByteBuffer(ByteBuffer buffer) {
-  	buffer.put((byte)calculateLength());
+		putLength(buffer);
   	buffer.put(MsgType.REGISTER.octet);
   	Utilities.putUnsignedShort(buffer, mTopicId);
   	Utilities.putUnsignedShort(buffer, mMsgId);

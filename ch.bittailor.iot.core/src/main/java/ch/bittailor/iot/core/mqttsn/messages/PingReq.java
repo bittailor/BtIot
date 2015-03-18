@@ -31,7 +31,7 @@ public class PingReq extends MessageBase {
 	
 	@Override
 	public ByteBuffer writeToByteBuffer(ByteBuffer buffer) {
-		buffer.put((byte)calculateLength());
+		putLength(buffer);
 		buffer.putInt(MsgType.PINGREQ.octet);
 		if(mWithClientId) {
 			Utilities.putString(buffer, mClientId);

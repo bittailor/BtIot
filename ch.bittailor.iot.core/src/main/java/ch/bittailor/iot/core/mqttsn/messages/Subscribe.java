@@ -23,7 +23,7 @@ public class Subscribe extends MessageBase {
 
 	@Override
 	public ByteBuffer writeToByteBuffer(ByteBuffer buffer) {
-    buffer.put((byte)calculateLength());
+		putLength(buffer);
     buffer.putInt(MsgType.SUBSCRIBE.octet);
     buffer.put(mFlags.asByte());
     Utilities.putUnsignedShort(buffer, mMsgId);

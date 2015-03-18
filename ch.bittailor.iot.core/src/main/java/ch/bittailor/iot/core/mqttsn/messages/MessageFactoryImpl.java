@@ -5,14 +5,10 @@ import java.nio.ByteBuffer;
 import ch.bittailor.iot.core.utils.Utilities;
 
 public class MessageFactoryImpl implements MessageFactory {
-
-
+	
 	public MessageFactoryImpl() {
 	}
 
-	/* (non-Javadoc)
-	 * @see ch.bittailor.iot.mqttsn.messages.MessageFactory#createMessage(java.nio.ByteBuffer)
-	 */
 	@Override
 	public Message createMessage(ByteBuffer packet) throws MessageFactoryException {
 		packet.mark();
@@ -39,7 +35,7 @@ public class MessageFactoryImpl implements MessageFactory {
 		case DISCONNECT: return new Disconnect(buffer);
 		case GWINFO: throw new MessageFactoryException("MsgType " + msgType + " not implemented yet");
 		case PINGREQ: return new PingReq(buffer);
-		case PINGRESP: throw new MessageFactoryException("MsgType " + msgType + " not implemented yet");
+		case PINGRESP: return new PingResp(buffer);
 		case PUBACK: throw new MessageFactoryException("MsgType " + msgType + " not implemented yet");
 		case PUBCOMP: throw new MessageFactoryException("MsgType " + msgType + " not implemented yet");
 		case PUBLISH: return new Publish(buffer);

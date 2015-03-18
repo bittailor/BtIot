@@ -20,8 +20,6 @@ public class Regack extends MessageBase {
 		mMsgId = msgId;
 		mReturnCode = returnCode;
 	}
-
-	
 	
 	@Override
 	protected int calculateLength() {
@@ -30,7 +28,7 @@ public class Regack extends MessageBase {
 
 	@Override
 	public ByteBuffer writeToByteBuffer(ByteBuffer buffer) {
-		buffer.put((byte)calculateLength());
+		putLength(buffer);
 		buffer.put(MsgType.REGACK.octet);
 		Utilities.putUnsignedShort(buffer, mTopicId);
 		Utilities.putUnsignedShort(buffer, mMsgId);

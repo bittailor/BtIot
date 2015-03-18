@@ -17,7 +17,7 @@ public class PingResp extends MessageBase {
 
 	@Override
 	public ByteBuffer writeToByteBuffer(ByteBuffer buffer) {
-		buffer.put((byte)calculateLength());
+		putLength(buffer);
 		buffer.put(MsgType.PINGRESP.octet);
 		return buffer;
 	}

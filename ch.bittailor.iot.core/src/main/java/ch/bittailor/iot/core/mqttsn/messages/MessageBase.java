@@ -2,6 +2,8 @@ package ch.bittailor.iot.core.mqttsn.messages;
 
 import java.nio.ByteBuffer;
 
+import ch.bittailor.iot.core.utils.Utilities;
+
 public abstract class MessageBase implements Message {
 
 	@Override
@@ -13,5 +15,17 @@ public abstract class MessageBase implements Message {
 	}
 	
 	protected abstract int calculateLength();
+	
+	protected ByteBuffer putLength(ByteBuffer buffer) {
+		int length = calculateLength();
+		if (length < 256) {
+			buffer.put((byte)length);
+			return buffer;
+		}
+		
+		buffer.put((byte)0x01);
+		Utilities.putUnsignedShort(buffer, length);
+		return buffer;
+	}
 	
 }
