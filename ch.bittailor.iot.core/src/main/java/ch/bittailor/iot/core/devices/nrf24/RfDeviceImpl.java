@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.bittailor.iot.core.devices.nrf24.RfAddress;
 import ch.bittailor.iot.core.devices.nrf24.RfPipe;
+import ch.bittailor.iot.core.utils.Utilities;
 
 public class RfDeviceImpl implements RfDevice {
 	private static final Logger LOG = LoggerFactory.getLogger(RfDeviceImpl.class);
@@ -29,6 +30,11 @@ public class RfDeviceImpl implements RfDevice {
 	@Override
 	public Status status() {
 		return new Status(readRegister(OneByteRegister.REGISTER_STATUS));
+	}
+	
+	@Override
+	public String fifoStatus() {
+		return Utilities.toHexString(readRegister(OneByteRegister.REGISTER_FIFO_STATUS));
 	}
 
 	@Override
@@ -325,8 +331,9 @@ public class RfDeviceImpl implements RfDevice {
 	}
 
 	@Override
-	public ByteBuffer readReceivePayload() {	
+	public ByteBuffer readReceivePayload() {			
 		int availableSize = availableReceivePayload();
+		LOG.info("readReceivePayload availableSize = {}",availableSize);
 		if (0 >= availableSize ||  availableSize > MAX_PAYLOAD_SIZE) {
 			LOG.warn("invalid availableSize : 0 >= {} > {} => retry read available receive payload",
 					availableSize, MAX_PAYLOAD_SIZE); 

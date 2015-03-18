@@ -43,6 +43,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	private Listener mListener;
 
 	private final WatchdogRunnable mWatchdogRunnable;
+	private final DumpInfoRunnable mDumpInfoRunnable;
 	private final Timer mWatchdogTimer;
 	
 	public RfDeviceControllerImpl(Executor executor, RfDevice device, GPIOPin power ,GPIOPin chipEnable, GPIOPin interruptPin) {
@@ -73,13 +74,20 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		chipEnable(false);
 		
 		mWatchdogRunnable = new WatchdogRunnable();
+		mDumpInfoRunnable = new DumpInfoRunnable();
 		mWatchdogTimer = new Timer("RfDevice ontroller info dumper", true);
 		mWatchdogTimer.scheduleAtFixedRate(new TimerTask() {		
 			@Override
 			public void run() {
 				mExecutor.execute(mWatchdogRunnable);
 			}
-		}, 1000, 1000);
+		}, 200, 200);
+		mWatchdogTimer.scheduleAtFixedRate(new TimerTask() {		
+			@Override
+			public void run() {
+				mExecutor.execute(mDumpInfoRunnable);
+			}
+		}, 10000, 10000);
 		
 	}
 	
@@ -223,7 +231,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	
 	private void onInterrupt() {
 		InterruptState interruptState =mInterruptState.get();
-		LOG.debug("onInterrupt - InterruptState = {}", interruptState);
+		LOG.info("onInterrupt - InterruptState = {}", interruptState);
 		switch (interruptState) {
 			case Ignore: {
 				LOG.warn("IRQ in InterruptState Ignore");
@@ -245,18 +253,20 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		}
 	}
 	
-	private void readReceiveData() {
-		while(!mDevice.isReceiveFifoEmpty()) {
-			LOG.debug("receive payload ...");
+	private void readReceiveData(boolean fromWatchdog) {
+		LOG.info("<start> receive payload status = 0x{} fromWatchdog = {} ...", mDevice.status(), fromWatchdog);
+		LOG.info("                        isReceiveFifoEmpty = {} , fifoStatus = 0x{}", mDevice.isReceiveFifoEmpty(), mDevice.fifoStatus());
+		
+		while(!mDevice.isReceiveFifoEmpty()) {			
+			LOG.info(" ... receive payload ...");
 			final RfPipe pipe = mDevice.readReceivePipe();
 			final ByteBuffer packet = mDevice.readReceivePayload();
 			mDevice.clearDataReady();
 			if(packet.remaining() <= 0) {
 				LOG.error("invalid read size of {} => drop packet", packet.remaining());
 			} else {
-				LOG.debug("... payload received of size {} with {}",
-						packet.remaining(),
-						Utilities.toHexString(packet));
+				LOG.info("... payload received of size {} ", packet.remaining());
+				LOG.info("... payload received of with {}", Utilities.toHexString(packet));
 				mExecutor.execute(new Runnable() {				
 					@Override
 					public void run() {
@@ -265,21 +275,27 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 				});	
 			}
 		}
+		LOG.info("<end> receive payload status = 0x{} fromWatchdog = {} ...", mDevice.status(), fromWatchdog);
+		LOG.info("                      isReceiveFifoEmpty = {} , fifoStatus = 0x{}", mDevice.isReceiveFifoEmpty(), mDevice.fifoStatus());
+		
 	}
 	
-	private void watchdogCheck() {
-		LOG.debug("");
-		LOG.debug("Info Dump");
-		LOG.debug("   status = {}", mDevice.status().toString());
-		LOG.debug("   isReceiveFifoEmpty = {} ", mDevice.isReceiveFifoEmpty());
-		LOG.debug("   isReceiveFifoFull = {} ", mDevice.isReceiveFifoFull());
-		LOG.debug("   transceiverMode = {}", mDevice.transceiverMode().name());
-		LOG.debug("   powerUp = {} ", mDevice.powerUp());
-		LOG.debug("   interruptPin = {} ", interruptPin());
-		LOG.debug("");		
+	private void watchdogCheck() {	
 		if(!mDevice.isReceiveFifoEmpty()) {
-			readReceiveData();
+			readReceiveData(true);
 		}
+	}
+	
+	private void dumpInfo() {
+		LOG.info("");
+		LOG.info("Info Dump");
+		LOG.info("   status = {}", mDevice.status().toString());
+		LOG.info("   isReceiveFifoEmpty = {} ", mDevice.isReceiveFifoEmpty());
+		LOG.info("   isReceiveFifoFull = {} ", mDevice.isReceiveFifoFull());
+		LOG.info("   transceiverMode = {}", mDevice.transceiverMode().name());
+		LOG.info("   powerUp = {} ", mDevice.powerUp());
+		LOG.info("   interruptPin = {} ", interruptPin());
+		LOG.info("");		
 	}
 
 	private void handleReceiveData(RfPipe pipe, ByteBuffer packet) {
@@ -330,7 +346,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	class ReadReceiveDataRunnable implements Runnable {
 		@Override
 		public void run() {
-			readReceiveData();
+			readReceiveData(false);
 		}
 	}
 	
@@ -338,6 +354,13 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 		@Override
 		public void run() {
 			watchdogCheck();
+		}
+	}
+	
+	class DumpInfoRunnable implements Runnable {
+		@Override
+		public void run() {
+			dumpInfo();
 		}
 	}
 
@@ -564,7 +587,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 
 			mInterruptState.set(InterruptState.Ignore);
 			if(!interruptPin()){
-				readReceiveData();
+				readReceiveData(false);
 				mDevice.clearDataReady();
 				mDevice.clearDataSent();
 				mDevice.clearRetransmitsExceeded();

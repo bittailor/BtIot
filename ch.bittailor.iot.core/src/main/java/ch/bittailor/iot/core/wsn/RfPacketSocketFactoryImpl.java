@@ -19,7 +19,7 @@ public class RfPacketSocketFactoryImpl implements RfPacketSocketFactory {
 	public RfPacketSocket create(int networkAddress) {
 		try {
 			// TODO move to configuration
-			int powerPin = 27;
+			int powerPin = 18;
 			int chipEnablePin = 25;
 			int interruptPin = 24;
 

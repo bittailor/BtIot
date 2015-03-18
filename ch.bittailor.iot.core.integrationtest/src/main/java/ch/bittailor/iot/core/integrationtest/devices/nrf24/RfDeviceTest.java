@@ -26,7 +26,7 @@ public class RfDeviceTest {
 	
 	@Before
 	public void Before() throws DeviceNotFoundException, UnavailableDeviceException, IOException, InterruptedException {
-		mPower = DeviceManager.open(27);
+		mPower = DeviceManager.open(18);
 		mRfDevice = new RfDeviceFactory().create();
 		mPower.setValue(true);
 		Thread.sleep(100);

@@ -52,7 +52,8 @@ public interface RfDevice extends AutoCloseable {
 	};
 
 	
-  Status status();	
+  Status status();
+  String fifoStatus();
 
 	void dynamicPayloadEnabled(RfPipe iPipe, boolean iValue);
 
