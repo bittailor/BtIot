@@ -268,7 +268,7 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 			final ByteBuffer packet = mDevice.readReceivePayload();
 			mDevice.clearDataReady();
 			if(packet.remaining() <= 0) {
-				LOG.error("invalid read size of {} => drop packet", packet.remaining());
+				LOG.error("invalid read size of {} => drop packet => [isReceiveFifoEmpty = {}]", packet.remaining(), mDevice.isReceiveFifoEmpty());
 			} else {
 				if (LOG.isDebugEnabled()) {
 					LOG.debug("... payload received of size {} with {} ", packet.remaining(), Utilities.toHexString(packet));
@@ -290,17 +290,17 @@ public class RfDeviceControllerImpl implements RfDeviceController {
 	}
 	
 	private void dumpInfo() {
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("");
-			LOG.debug("Info Dump");
-			LOG.debug("   status = {}", mDevice.status().toString());
-			LOG.debug("   isReceiveFifoEmpty = {} ", mDevice.isReceiveFifoEmpty());
-			LOG.debug("   isReceiveFifoFull = {} ", mDevice.isReceiveFifoFull());
-			LOG.debug("   transceiverMode = {}", mDevice.transceiverMode().name());
-			LOG.debug("   powerUp = {} ", mDevice.powerUp());
-			LOG.debug("   interruptPin = {} ", interruptPin());
-			LOG.debug("");	
-		}
+		//if (LOG.isDebugEnabled()) {
+			LOG.info("");
+			LOG.info("Info Dump");
+			LOG.info("   status = {}", mDevice.status().toString());
+			LOG.info("   isReceiveFifoEmpty = {} ", mDevice.isReceiveFifoEmpty());
+			LOG.info("   isReceiveFifoFull = {} ", mDevice.isReceiveFifoFull());
+			LOG.info("   transceiverMode = {}", mDevice.transceiverMode().name());
+			LOG.info("   powerUp = {} ", mDevice.powerUp());
+			LOG.info("   interruptPin = {} ", interruptPin());
+			LOG.info("");	
+		//}
 	}
 
 	private void handleReceiveData(RfPipe pipe, ByteBuffer packet) {

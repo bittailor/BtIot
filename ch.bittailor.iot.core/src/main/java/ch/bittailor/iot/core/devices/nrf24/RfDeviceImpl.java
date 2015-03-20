@@ -344,6 +344,9 @@ public class RfDeviceImpl implements RfDevice {
 					availableSize,
 					MAX_PAYLOAD_SIZE);
 			flushReceiveFifo();
+			if(!isReceiveFifoEmpty()) {
+				LOG.error("ReceiveFifo not empty after flush ({})", isReceiveFifoEmpty());
+			}		
 			return ByteBuffer.allocate(0);
 		}
 
