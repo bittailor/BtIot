@@ -6,7 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: ch.bittailor.iot.core.mqttsn.gateway,
  ch.bittailor.iot.core.wsn,
- ch.bittailor.iot.san,
+ ch.bittailor.iot.wsn,
  org.eclipse.kura;version="1.0.0",
  org.eclipse.kura.cloud;version="1.0.0",
  org.eclipse.kura.message;version="1.0.0",

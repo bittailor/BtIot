@@ -13,7 +13,7 @@
 		<module>ch.bittailor.iot.core</module>
 		<module>ch.bittailor.iot.core.test</module>
 		<module>ch.bittailor.iot.core.integrationtest</module>
-    <module>ch.bittailor.iot.san</module>
+    <module>ch.bittailor.iot.wsn</module>
     <module>ch.bittailor.iot.mqttsn</module>
   </modules>
 

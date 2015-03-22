@@ -15,7 +15,7 @@ itest_bundles = [
 
 app_bundles = [
   "ch.bittailor.iot.core/target/ch.bittailor.iot.core-1.0.0-SNAPSHOT.jar",
-  "ch.bittailor.iot.san/target/ch.bittailor.iot.san-1.0.0-SNAPSHOT.jar",
+  "ch.bittailor.iot.wsn/target/ch.bittailor.iot.wsn-1.0.0-SNAPSHOT.jar",
   "ch.bittailor.iot.mqttsn/target/ch.bittailor.iot.mqttsn-1.0.0-SNAPSHOT.jar"
 ]
 

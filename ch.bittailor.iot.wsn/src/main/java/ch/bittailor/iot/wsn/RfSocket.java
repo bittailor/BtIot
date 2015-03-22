@@ -1,4 +1,4 @@
-package ch.bittailor.iot.san;
+package ch.bittailor.iot.wsn;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -16,7 +16,7 @@ import ch.bittailor.iot.core.wsn.RfSocketAddress;
 
 public class RfSocket implements PacketSocket, ConfigurableComponent {
 	private static final Logger LOG = LoggerFactory.getLogger(RfSocket.class);
-	private static final String APP_ID = "ch.bittailor.iot.san.RfSocket";
+	private static final String APP_ID = "ch.bittailor.iot.wsn.RfSocket";
 		
 	private RfPacketSocket mRfPacketSocket;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0"
 	localization="en_us">
-	<OCD id="ch.bittailor.iot.san.RfSocket" name="RfSocket"
+	<OCD id="ch.bittailor.iot.wsn.RfSocket" name="RfSocket"
 		description="metatype file for the RF socket component">
 
 		<AD id="network-address" name="network-address" type="Integer"
@@ -9,7 +9,7 @@
 			description="The network address (0-255) of the nRF24 SAN network" />
 	</OCD>
 
-	<Designate pid="ch.bittailor.iot.san.RfSocket">
-		<Object ocdref="ch.bittailor.iot.san.RfSocket" />
+	<Designate pid="ch.bittailor.iot.wsn.RfSocket">
+		<Object ocdref="ch.bittailor.iot.wsn.RfSocket" />
 	</Designate>
 </MetaData>
