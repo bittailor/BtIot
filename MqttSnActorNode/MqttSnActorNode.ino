@@ -1,5 +1,4 @@
 #include <SPI.h>
-#include <dht.h>
 #include <BtMqttSn.h>
 
 //-----
@@ -34,14 +33,13 @@
 //-----
 
 MqttSnClient client;
-dht DHT;
 unsigned long nextReadTime;
 unsigned long lastConnect;
 unsigned long reconnectCounter;
 
 void setup() {
    Serial.begin(9600);
-   Serial << endl << endl << endl << "*** MQTT-SN actor example ***" << endl;
+   Serial << endl << endl << endl << "*** MQTT-SN actor node ***" << endl;
    Serial << endl;
    Serial << " - Node Address  = " << CLIENT_NODE_ID << endl;
    Serial << " - Topic Switch  = " << SWITH_TOPIC << endl;
